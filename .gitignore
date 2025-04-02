@@ -1,0 +1,14 @@
+# Visual Studio Cache files
+*.cache/**
+# Jupyter metadata files
+*.config/**
+*.ipython/**
+*.jupyter/**
+*.local/**
+*.npm/**
+# Bash files
+.bash_history
+# Dev containers files
+*.ssh/**
+*.vscode-server/**
+*.dotnet/**
