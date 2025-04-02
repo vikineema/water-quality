@@ -8,6 +8,11 @@ up: ## Bring up your Docker environment
 	docker compose up -d postgres
 	docker compose run checkdb
 	docker compose up -d jupyter
+	docker compose up -d geoserver
+	docker compose up -d pgadmin4
+
+reset: ## Stop all services, delete volumes, recreate volumes then restart all the servces 
+	make  down
 
 init: ## Prepare the database
 	docker compose exec -T jupyter datacube -v system init
