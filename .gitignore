@@ -12,3 +12,5 @@
 *.ssh/**
 *.vscode-server/**
 *.dotnet/**
+# Ignore items in data folder
+data/**
