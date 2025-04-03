@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools"] 
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "water-quality"
+version = "0.0.1"
+authors = [
+  { name="Victoria Neema", email="vikinyaga@gmail.com" },
+]
+maintainers = [
+  { name="Victoria Neema", email="vikinyaga@gmail.com" },
+]
+description = "Helpful scripts to make water extent and water quality data available in a ODC deploymnent"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: GIS',
+    'License :: OSI Approved :: Apache Software License',
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = { file = "LICENSE" }
+dependencies = ["datacube"]
+[project.optional-dependencies]
+dev = [
+ "ruff"
+ ]
+test = [
+    "pytests",
+    "coverage"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/vikineema/water-quality"
+"Bug Reports" = "https://github.com/vikineema/waterquality/issues"
+"Source" = "https://github.com/vikineema/waterquality/"
