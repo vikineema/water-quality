@@ -1,0 +1,28 @@
+name: env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - gdal
+  - libgdal
+  - libgdal-arrow-parquet
+  - postgresql
+  # ODC ecosystem libraries
+  - datacube
+  - eodatasets3
+  - odc-geo
+  - odc-loader
+  - odc-stac
+  - odc-apps-dc-tools
+  # Analysis packages
+  - geopandas
+  # Code formatting
+  - ruff
+  # Tests
+  - coverage
+  - pytest
+  # Jupyter
+  - jupyterlab
+  - jupyterlab_iframe
+  - jupyter-resource-usage
+  - nodejs

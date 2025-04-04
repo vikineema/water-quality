@@ -6,6 +6,7 @@
 *.jupyter/**
 *.local/**
 *.npm/**
+**/.ipynb_checkpoints/**
 # Bash files
 .bash_history
 # Dev containers files

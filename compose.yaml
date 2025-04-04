@@ -14,7 +14,8 @@ services:
     restart: always
 
   jupyter:
-    image: digitalearthafrica/deafrica-sandbox:latest
+    build:
+      context: docker/
     environment:
       - DB_HOSTNAME=postgres
       - DB_DATABASE=opendatacube

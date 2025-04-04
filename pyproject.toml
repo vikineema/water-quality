@@ -23,13 +23,16 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 license = { file = "LICENSE" }
-dependencies = ["datacube"]
+dependencies = [
+  "datacube",
+  "geopandas"
+  ]
 [project.optional-dependencies]
 dev = [
  "ruff"
  ]
 test = [
-    "pytests",
+    "pytest",
     "coverage"
 ]
 
