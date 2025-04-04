@@ -5,7 +5,7 @@
 Paper: https://doi.org/10.1002/gdj3.285
 Data: https://zenodo.org/records/14190225
 
-The Global Lake/Reservoir Surface Extent Dataset (GLRSED) contains the spatial extent and basic attributes (e.g., name, area, lake type and source) of 2.17 million lakes/reservoirs and was produced based on HydroLAKES, GRanD and OpenStreetMap.The dataset contains 1423875 lakes and 747268 reservoirs.
+The Global Lake/Reservoir Surface Extent Dataset (GLRSED) contains the spatial extent and basic attributes (e.g., name, area, lake type and source) of 2.17 million lakes/reservoirs and was produced based on HydroLAKES, GRanD and OpenStreetMap. The dataset contains 1423875 lakes and 747268 reservoirs.
 
 Data Sources:
 
