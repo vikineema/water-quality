@@ -42,6 +42,18 @@ Datasets used in the creation of HydroLakes:
 
 ![alt text](docs/images/hydrolakes_data_sources.png)
 
+### Results
+
+There are 15,950 waterbodies in the HydroAtlas LakeAtlas dataset for Africa.
+715 of these waterbodies are reservoirs (artificial waterbodies).
+112 of these waterbodies have names.
+
+Using a simple intersection with the DE Africa waterbodies dataset (700,712 waterbodies):
+
+- 1,246 DE Africa waterbodies have been identified as reservoirs (artificial waterbodies).
+- 6,156 DE Africa waterbodies have been assigned a name
+- 3 out of the 6,156 DE Africa waterbodies that have been assigned a name have 2 or more names due to intersection with multiple named LakeAtlas waterbodies.
+
 ## ReaLSAT
 
 This is a global dataset of reservoir and lake surface area variations.
@@ -94,4 +106,15 @@ under construction or in advanced planning stages.
 
 > **This dataset has been fully integrated into HydroLakes.**
 
+### Assigning a Country Attribute
 
+- Ask Unicef if we can use theirs since a few African nations have  boundaries under contention.
+
+### Volume and depth
+
+Do we need volume and depth data? 
+
+
+### Data storage location
+
+S3 bucket.
