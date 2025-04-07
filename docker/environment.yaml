@@ -16,6 +16,7 @@ dependencies:
   - odc-apps-dc-tools
   # Analysis packages
   - geopandas
+  - dask-geopandas
   # Code formatting
   - ruff
   # Tests
