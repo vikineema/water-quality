@@ -55,7 +55,7 @@ download-waterbodies-gpkg:
 	ogr2ogr -f Parquet data/waterbodies.parquet \
 	"/vsicurl/https://deafrica-services.s3.af-south-1.amazonaws.com/waterbodies/v0.0.3/historical_extent/waterbodies.gpkg"
 
-download-glrglsed: ## Download the GLRSED dataset split by continent
+download-glrsed-v1-2: ## Download the GLRSED dataset split by continent
 	mkdir -p data
 	# Download file
 	curl -L "https://zenodo.org/records/14190225/files/GLRSED_shp_V1.2_by%20continent.zip?download=1" \
@@ -67,7 +67,7 @@ download-glrglsed: ## Download the GLRSED dataset split by continent
 	# Delete data not for Africa
 	find "data/GLRSED_shp_V1.2_by continent/" -type f ! -name "*AF*" -exec rm  {} +
 
-download-hydroatlas-lakeatlas: ## Download HydroATLAS LakeATLAS
+download-hydroatlas-lakeatlas-v1-0-1: ## Download HydroATLAS LakeATLAS
 	mkdir -p data
 	# Download zip file 
 	curl -L https://figshare.com/ndownloader/files/35959547 \
@@ -77,7 +77,7 @@ download-hydroatlas-lakeatlas: ## Download HydroATLAS LakeATLAS
 	# Delete downloaded zip file
 	rm data/LakeATLAS_Data_v10_shp.zip
 	
-download-realsate: ## Download the ReaLSAT reference shape of waterbodies
+download-realsat-v2: ## Download the ReaLSAT reference shape of waterbodies
 	mkdir -p data
 	# Download zip file
 	curl -L https://zenodo.org/records/7614815/files/ReaLSAT-2-0.zip \
@@ -86,3 +86,6 @@ download-realsate: ## Download the ReaLSAT reference shape of waterbodies
 	unzip data/ReaLSAT-2-0.zip -d data/
 	# Delete zip file
 	rm data/ReaLSAT-2-0.zip
+
+download-glwd-v2:
+	
