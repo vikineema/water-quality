@@ -12,7 +12,9 @@ RUN  micromamba install --yes --name base  --file /tmp/environment.yaml --verbos
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 COPY requirements.txt assets/tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl /tmp/
+# Install tflite-runtime for odc-stats
 RUN micromamba run --name base pip install tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl \
+    # Additional packages not available through conda
     && micromamba run --name base pip install --no-cache-dir -r /tmp/requirements.txt
 
 FROM ubuntu:jammy
@@ -37,6 +39,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PATH="${PYTHON_ENV}/bin:${PATH}" \
     PROJ_DATA="${PYTHON_ENV}/share/proj"
 
+## Non-root user creation
 # Delete existing user with UID="${NB_UID}" if it exists
 RUN if grep -q "${NB_UID}" /etc/passwd; then \
         userdel --remove $(id -un "${NB_UID}"); \
@@ -48,17 +51,19 @@ RUN useradd --no-log-init --create-home --shell /bin/bash --no-user-group --gid 
 COPY --chown=$NB_UID:$NB_GID --from=micromamba /opt/conda $PYTHON_ENV
 
 ## Jupyter config
-
 USER $NB_USER
 # Enable server extensions
 RUN jupyter server extension enable --py --sys-prefix jupyterlab_iframe jupyter_resource_usage \
     && jupyter lab build
-
 USER root
 ENV JUPYTERLAB_DIR=$PYTHON_ENV/share/jupyter/lab 
 COPY assets/overrides.json $JUPYTERLAB_DIR/settings/
 COPY assets/jupyter_lab_config.py $PYTHON_ENV/etc/jupyter/
 
+# Clean up
+RUN apt clean autoclean -y \
+    && apt autoremove -y \
+    && rm -rf /var/lib/{apt,dpkg,cache}/
 
 USER $NB_USER
 WORKDIR $HOME

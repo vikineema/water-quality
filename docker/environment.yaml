@@ -1,8 +1,8 @@
-name: env
+name: water-quality-env
 channels:
   - conda-forge
 dependencies:
-  - python=3.12
+  - python=3.12.3
   - gdal
   - libgdal
   - libgdal-arrow-parquet
@@ -14,9 +14,21 @@ dependencies:
   - odc-loader
   - odc-stac
   - odc-apps-dc-tools
-  # Analysis packages
-  - geopandas
+  ## Analysis packages
   - dask-geopandas
+  - geopandas
+  # xarray
+  - bottleneck
+  - cftime
+  - dask
+  - h5netcdf
+  - iris
+  - netCDF4
+  - numbagg
+  - pydap
+  - scipy
+  - xarray
+  - zarr
   # Code formatting
   - ruff
   # Tests
