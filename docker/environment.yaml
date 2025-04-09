@@ -17,6 +17,7 @@ dependencies:
   ## Analysis packages
   - dask-geopandas
   - geopandas
+  - rioxarray
   # xarray
   - bottleneck
   - cftime

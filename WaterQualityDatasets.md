@@ -1,29 +1,19 @@
 # Water Qaulity Datasets
 
-## Global surface water dataset
+## Copernicus Land Monitoring Service Water Bodies Group
 
-Data documentation is provided [here](https://global-surface-water.appspot.com/download) and in the  [Data User Guide](https://storage.cloud.google.com/global-surface-water/downloads_ancillary/DataUsersGuidev2021.pdf).
+Product Manual: https://land.copernicus.eu/en/technical-library/product-user-manual-lake-water-quality-v1-1.0/@@download/file
 
-This dataset provides data on Permanent Water, Seasonal Water, and Reservoir Water and is produced by the European Commission Joint Research Centre.
+### Lake Water Quality 2002-2012 (raster 300 m), global, 10-daily – version 1
 
-Characteristics:
+Provides semi-continuous observations for a large number of medium and large-sized lakes, according to the Global Lakes and Wetlands Database (GLWD) or otherwise of specific environmental monitoring interest. 10-daily observations are available in the spatial resolution of 300 m and with the temporal extent from 2002 to 2012.
 
-- 30x30 meter pixel resolution
-- Temporal range of March 1984 - December 2021
-- Small rivers and waterbodies are not captured 
-- Global Reservoir and Dam Geospatial Datacube
+Metadata: https://globalland.vito.be/geonetwork/srv/api/records/clms_global_lwq_300m_v1_10daily-reproc/formatters/xsl-view?root=div&output=pdf
 
-Subdatesets:
+### Lake Water Quality 2016-2024 (raster 300 m), global, 10-daily – version 1
 
-| Name | Description | Datatype | Nodata value |
-| - | - | - | - |
-| occurrence (Surface Water Occurrence) | The frequency with which water was present on the surface from March 1984 to December 2021 expressed as a percentage.| int8 | 255 |
-| change (Occurrence Change Intensity)  | Where the surface water occurrence increased, decreased or remained the same between 1984-1999 and 2000-2021 | | |
-| seasonality | | | |
-| recurrence | | | |
-| transitions | | | |
-| maximum extent | | | |
+### Lake Water Quality 2019-2024 (raster 100 m), global, 10-daily – version 1
 
-# HydroLAkes
+### Lake Water Quality 2024-present (raster 100 m), global, 10-daily – version 2
 
-GDW consensus global database
+### Lake Water Quality 2024-present (raster 300 m), global, 10-daily – version 2
