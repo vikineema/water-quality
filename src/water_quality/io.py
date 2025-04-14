@@ -9,7 +9,7 @@ from fsspec.implementations.local import LocalFileSystem
 from gcsfs import GCSFileSystem
 from s3fs.core import S3FileSystem
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 def is_s3_path(path: str) -> bool:
@@ -138,3 +138,17 @@ def find_json_files(directory_path: str, file_name_pattern: str = ".*") -> list[
     elif is_gcsfs_path(path=directory_path):
         json_file_paths = [f"gs://{file}" for file in json_file_paths]
     return json_file_paths
+
+
+def download_file(url: str, output_file_path: str, verbose: bool = False):
+    fs_url = get_filesystem(url)
+    fs_output_file_path = get_filesystem(output_file_path, anon=False)
+
+    # Create the parent directories if they do not exist
+    parent_dir = fs_output_file_path._parent(output_file_path)
+    fs_output_file_path.makedirs(parent_dir)
+
+    fs_url.get(url, output_file_path)
+
+    if verbose:
+        log.info(f"Downloaded {output_file_path}")
