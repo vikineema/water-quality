@@ -6,8 +6,10 @@ c = get_config()  # noqa
 
 # jupyter-resource-usage extension
 if 'MEM_LIMIT' not in os.environ:
-    total_memory = psutil.virtual_memory().total
-    os.environ['MEM_LIMIT'] = str(total_memory)
+    # Allow 2GB buffer
+    total_memory = psutil.virtual_memory().total 
+    mem_limit = total_memory - (2 * 1024 ** 3)
+    os.environ['MEM_LIMIT'] = str(mem_limit)
 
 # Display memory limit  
 c.ServerApp.ResourceUseDisplay.mem_limit = int(os.environ['MEM_LIMIT'])

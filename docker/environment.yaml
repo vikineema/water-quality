@@ -18,7 +18,10 @@ dependencies:
   - dask-geopandas
   - geopandas
   - rioxarray
-  # xarray
+  # fsspec extras
+  - s3fs
+  - gcsfs
+  # xarray + extras
   - bottleneck
   - cftime
   - dask
@@ -32,6 +35,7 @@ dependencies:
   - zarr
   # Code formatting
   - ruff
+  - yamllint
   # Tests
   - coverage
   - pytest
@@ -40,3 +44,9 @@ dependencies:
   - jupyterlab_iframe
   - jupyter-resource-usage
   - nodejs
+  # developer tools
+  - make
+  # packages requiring pip
+  - pip:
+    - assets/tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl
+    - -r requirements.txt
