@@ -36,6 +36,8 @@ extensions_list=(
     # Markdown
     "DavidAnson.vscode-markdownlint"
     "shd101wyy.markdown-preview-enhanced"
+    # TOML
+    tamasfe.even-better-toml
     # General code tools
     "njpwerner.autodocstring"
     "esbenp.prettier-vscode"
