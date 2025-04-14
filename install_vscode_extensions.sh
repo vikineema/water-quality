@@ -17,6 +17,7 @@ extensions_list=(
     "ms-python.isort"
     "ms-python.flake8"
     "ms-python.black-formatter"
+    "charliermarsh.ruff"
     "ms-toolsai.jupyter"
     "ms-toolsai.jupyter-renderers"
     "ms-toolsai.vscode-jupyter-slideshow"
