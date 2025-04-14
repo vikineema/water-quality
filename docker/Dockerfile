@@ -1,8 +1,9 @@
 FROM mambaorg/micromamba:2.0.8 AS micromamba
 
 USER root
+COPY environment.yaml requirements.txt /tmp/
+COPY assets/tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl /tmp/assets/
 
-COPY environment.yaml /tmp/environment.yaml
 # Install packages into the empty conda environmemnt base
 RUN  micromamba install --yes --name base  --file /tmp/environment.yaml --verbose \
     # Clean package cache
@@ -11,11 +12,8 @@ RUN  micromamba install --yes --name base  --file /tmp/environment.yaml --verbos
     && micromamba env export --name base --explicit
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-COPY requirements.txt assets/tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl /tmp/
-# Install tflite-runtime for odc-stats
-RUN micromamba run --name base pip install tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl \
-    # Additional packages not available through conda
-    && micromamba run --name base pip install --no-cache-dir -r /tmp/requirements.txt
+# Clear cache 
+RUN micromamba run --name base pip cache purge
 
 FROM ubuntu:jammy
 
@@ -67,8 +65,4 @@ RUN apt clean autoclean -y \
 
 USER $NB_USER
 WORKDIR $HOME
-CMD ["jupyter", "lab", \
-"--ip=0.0.0.0", \
-"--port=9988", \
-"--no-browser", \
-"--debug"]
+CMD ["jupyter", "lab", "--config==$PYTHON_ENV/etc/jupyter/jupyter_lab_config.py"]

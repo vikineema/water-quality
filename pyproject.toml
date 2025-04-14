@@ -29,7 +29,8 @@ dependencies = [
   ]
 [project.optional-dependencies]
 dev = [
- "ruff"
+ "ruff",
+ "yamlint", 
  ]
 test = [
     "pytest",

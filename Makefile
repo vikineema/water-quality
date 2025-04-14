@@ -1,7 +1,7 @@
 #!make
 SHELL := /usr/bin/env bash
 
-setup: up init get-jupyter-token
+setup: up install-python-pkgs init get-jupyter-token
 
 build:
 	docker compose build 
@@ -26,7 +26,19 @@ down: ## Bring down your Docker environment
 logs: ## View logs for all services
 	docker compose logs 
 
+install-python-pkgs:
+	docker compose exec jupyter bash -c "cd /home/jovyan && pip install -e ."
+
+lint-src:
+	ruff format --verbose src/
+	
 ## Jupyter service
+start-jupyter: ## To be used in micromamba-shell
+	cp docker/assets/jupyter_lab_config.py ${CONDA_PREFIX}/etc/jupyter/jupyter_lab_config.py
+	nohup jupyter lab > /dev/null 2>&1 &
+	sleep 10s
+	jupyter lab list
+
 get-jupyter-token: ## View the secret token for jupyterlab
 	## Also available in .local/share/jupyter/runtime/jupyter_cookie_secret
 	docker compose exec -T jupyter jupyter lab list
@@ -49,43 +61,3 @@ setup-explorer: ## Setup the datacube explorer
 explorer-refresh-products:
 	docker compose exec -T explorer cubedash-gen --init --all
 
-## Download required datasets
-download-waterbodies-gpkg:
-	mkdir -p data
-	ogr2ogr -f Parquet data/waterbodies.parquet \
-	"/vsicurl/https://deafrica-services.s3.af-south-1.amazonaws.com/waterbodies/v0.0.3/historical_extent/waterbodies.gpkg"
-
-download-glrsed-v1-2: ## Download the GLRSED dataset split by continent
-	mkdir -p data
-	# Download file
-	curl -L "https://zenodo.org/records/14190225/files/GLRSED_shp_V1.2_by%20continent.zip?download=1" \
-	-o "data/GLRSED_shp_V1.2_by continent.zip"
-	# Unzip downloaded file
-	unzip "data/GLRSED_shp_V1.2_by continent.zip" -d data/
-	# Delete downloaded zip file
-	rm "data/GLRSED_shp_V1.2_by continent.zip"
-	# Delete data not for Africa
-	find "data/GLRSED_shp_V1.2_by continent/" -type f ! -name "*AF*" -exec rm  {} +
-
-download-hydroatlas-lakeatlas-v1-0-1: ## Download HydroATLAS LakeATLAS
-	mkdir -p data
-	# Download zip file 
-	curl -L https://figshare.com/ndownloader/files/35959547 \
-		-o data/LakeATLAS_Data_v10_shp.zip
-	# Unzip downloaded file
-	unzip data/LakeATLAS_Data_v10_shp.zip -d data/
-	# Delete downloaded zip file
-	rm data/LakeATLAS_Data_v10_shp.zip
-	
-download-realsat-v2: ## Download the ReaLSAT reference shape of waterbodies
-	mkdir -p data
-	# Download zip file
-	curl -L https://zenodo.org/records/7614815/files/ReaLSAT-2-0.zip \
-	-o data/ReaLSAT-2-0.zip 
-	# Unzip downloaded file
-	unzip data/ReaLSAT-2-0.zip -d data/
-	# Delete zip file
-	rm data/ReaLSAT-2-0.zip
-
-download-glwd-v2:
-	

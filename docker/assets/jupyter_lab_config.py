@@ -31,3 +31,15 @@ c.ServerApp.ResourceUseDisplay.disk_warning_threshold = 0.1
 
 # Disable token
 c.ServerApp.token = ''
+
+# The IP address the Jupyter server will listen on
+c.ServerApp.ip = '0.0.0.0'
+
+# Port the server will listen on
+c.ServerApp.port=9988
+
+# Log level
+c.ServerApp.log_level='DEBUG'
+
+# Do not open browser
+c.ServerApp.open_browser = False
