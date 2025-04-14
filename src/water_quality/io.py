@@ -1,9 +1,10 @@
 import logging
 import os
+import posixpath
 import re
-from urllib.parse import urlparse
 
 import fsspec
+from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
 from gcsfs import GCSFileSystem
 from s3fs.core import S3FileSystem
@@ -12,32 +13,31 @@ logger = logging.getLogger(__name__)
 
 
 def is_s3_path(path: str) -> bool:
-    o = urlparse(path)
-    if o.scheme in ["s3"]:
-        return True
-    else:
-        return False
+    fs, _ = fsspec.core.url_to_fs(path)
+    return isinstance(fs, S3FileSystem)
 
 
 def is_gcsfs_path(path: str) -> bool:
-    o = urlparse(path)
-    if o.scheme in ["gcs", "gs"]:
-        return True
-    else:
-        return False
+    fs, _ = fsspec.core.url_to_fs(path)
+    return isinstance(fs, GCSFileSystem)
 
 
-def is_url(path: str) -> bool:
-    o = urlparse(path)
-    if o.scheme in ["http", "https"]:
-        return True
-    else:
-        return False
+def is_http_url(path: str) -> bool:
+    fs, _ = fsspec.core.url_to_fs(path)
+    return isinstance(fs, HTTPFileSystem)
 
 
 def is_local_path(path: str) -> bool:
     fs, _ = fsspec.core.url_to_fs(path)
     return isinstance(fs, LocalFileSystem)
+
+
+def join_urlpath(base, *paths) -> str:
+    if is_local_path(base):
+        return os.path.join(base, *paths)
+    else:
+        # Ensure urls join correctly
+        return posixpath.join(base, *paths)
 
 
 def get_filesystem(
@@ -51,6 +51,8 @@ def get_filesystem(
             fs = GCSFileSystem(token="anon")
         else:
             fs = GCSFileSystem()
+    elif is_http_url(path):
+        fs = HTTPFileSystem()
     elif is_local_path(path=path):
         fs = LocalFileSystem()
     return fs
