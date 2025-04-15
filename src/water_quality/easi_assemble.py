@@ -18,6 +18,8 @@ from eodatasets3.model import AccessoryDoc, DatasetDoc, ProductDoc
 from eodatasets3.properties import Eo3Interface
 from eodatasets3.validate import Level, ValidationExpectations, validate_dataset
 
+from water_quality.io import get_filesystem
+
 # Uncomment and add logging if and where needed
 # import logging
 # from tasks.common import get_logger
@@ -33,7 +35,7 @@ class EasiPrepare(Eo3Interface):
     def __init__(
         self,
         dataset_path: str,
-        product_yaml: Path,
+        product_yaml: str,
         output_path: str = None,
     ) -> None:
         """
@@ -63,7 +65,7 @@ class EasiPrepare(Eo3Interface):
         # Handle inputs
         self._set_dataset_path(dataset_path)
         self._set_output_path(output_path)
-        self._product_yaml = Path(product_yaml)
+        self._product_yaml = product_yaml
 
         # Defaults
         self._dataset = (
@@ -229,7 +231,8 @@ class EasiPrepare(Eo3Interface):
         """
         Return the product name from the product yaml
         """
-        with self._product_yaml.open() as f:
+        fs = get_filesystem(self._product_yaml)
+        with fs.open(self._product_yaml) as f:
             y = yaml.load(f, Loader=yaml.FullLoader)
             return y["name"]
 
@@ -238,7 +241,8 @@ class EasiPrepare(Eo3Interface):
         Return list of (measurement, alias, ..) tuples
         """
         measurements = []  # list of tuples (measurement name, alias, ...)
-        with self._product_yaml.open() as f:
+        fs = get_filesystem(self._product_yaml)
+        with fs.open(self._product_yaml) as f:
             y = yaml.load(f, Loader=yaml.FullLoader)
             for m in y["measurements"]:
                 t = [m["name"]]

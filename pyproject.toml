@@ -41,3 +41,6 @@ test = [
 "Homepage" = "https://github.com/vikineema/water-quality"
 "Bug Reports" = "https://github.com/vikineema/waterquality/issues"
 "Source" = "https://github.com/vikineema/waterquality/"
+
+[project.scripts]
+clms-lwq = "water_quality.clms_lwq.main:clms_lwq"

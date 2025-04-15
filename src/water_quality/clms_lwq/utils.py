@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from water_quality.io import join_urlpath
 
 
-def get_output_fp(output_dir: str, url: str) -> str:
+def get_dataset_fp(output_dir: str, url: str) -> str:
     # Get the file name
     filename = posixpath.basename(urlparse(url).path)
     # Get the file extension
