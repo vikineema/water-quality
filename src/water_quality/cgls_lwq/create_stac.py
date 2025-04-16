@@ -1,7 +1,7 @@
 """
 Create per dataset metadata (stac files) for the Copernicus
 Land Monitoring Service (CLMS) Lake Water Quality
-2002-2012 (raster 300 m), global, 10-daily – version 1.3
+2002-2012 (raster 300 m), global, 10-daily – version 1
 product
 """
 
