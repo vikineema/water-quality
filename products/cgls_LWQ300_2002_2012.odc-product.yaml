@@ -1,6 +1,8 @@
 ---
 name: cgls_LWQ300_2002_2012
-description:  Copernicus Global Land Service – Lake Water Quality 2002-2012 (raster 300 m), global, 10-daily – version 1
+description: >
+  Copernicus Global Land Service – Lake Water Quality 2002-2012 (raster 300 m),
+  global, 10-daily – version 1
 metadata_type: eo3
 
 metadata:
