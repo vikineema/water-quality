@@ -30,6 +30,7 @@ install-python-pkgs:
 	docker compose exec jupyter bash -c "cd /home/jovyan && pip install -e ."
 
 lint-src:
+	ruff check --select I --fix src/
 	ruff format --verbose src/
 	
 ## Jupyter service

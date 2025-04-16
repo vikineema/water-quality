@@ -18,11 +18,9 @@ from odc.geo.xr import assign_crs
 from pyproj import CRS
 from tqdm import tqdm
 
-from water_quality.clms_lwq.common import MANIFEST_FILE_URLS, MEASUREMENTS
+from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS
 from water_quality.io import get_filesystem, is_local_path, join_urlpath
 from water_quality.logs import logging_setup
-
-log = logging.getLogger(__name__)
 
 
 @click.command(
@@ -56,6 +54,7 @@ log = logging.getLogger(__name__)
     type=int,
     help="Sequential index which will be used to define the range of geotiffs the pod will work with.",
 )
+@click.option("-v", "--verbose", default=1, count=True)
 def create_stac_files(
     product_name: str,
     product_yaml: str,
@@ -63,7 +62,12 @@ def create_stac_files(
     overwrite: bool,
     max_parallel_steps: int,
     worker_idx: int,
+    verbose: int,
 ):
+    # Setup logging level
+    logging_setup(verbose)
+    log = logging.getLogger(__name__)
+
     if product_name not in MANIFEST_FILE_URLS.keys():
         raise NotImplementedError(
             f"Manifest file url not configured for the product {product_name}"

@@ -43,4 +43,4 @@ test = [
 "Source" = "https://github.com/vikineema/waterquality/"
 
 [project.scripts]
-clms-lwq = "water_quality.clms_lwq.main:clms_lwq"
+cgls-lwq = "water_quality.cgls_lwq.main:cgls_lwq"

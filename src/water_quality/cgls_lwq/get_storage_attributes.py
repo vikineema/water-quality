@@ -9,30 +9,9 @@ from odc.geo.xr import assign_crs
 from pyproj import CRS
 from tqdm import tqdm
 
+from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS, MEASUREMENTS
 from water_quality.io import get_filesystem, is_local_path, join_urlpath
 from water_quality.logs import logging_setup
-
-# map product name to manifest file url
-MANIFEST_FILE_URLS = {
-    "cgls_LWQ300_v1_300": "https://globalland.vito.be/download/manifest/lwq_300m_v1_10daily-reproc_netcdf/manifest_clms_global_lwq_300m_v1_10daily-reproc_netcdf_latest.txt"
-}
-# Bands in the netcdf file to check
-MEASUREMENTS = [
-    "num_obs",
-    "first_obs",
-    "trophic_state_index",
-    "last_obs",
-    "n_obs_quality_risk_sum",
-    "stats_valid_obs_tsi_sum",
-    "stats_valid_obs_turbidity_sum",
-    "turbidity_mean",
-    "turbidity_sigma",
-]
-
-# Setup logging
-logging_setup(verbose=3)
-
-log = logging.getLogger(__name__)
 
 
 @click.command(
@@ -48,10 +27,16 @@ log = logging.getLogger(__name__)
     type=str,
     help="Directory to write the unique storage parameters text file to",
 )
+@click.option("-v", "--verbose", default=1, count=True)
 def get_storage_parameters(
     product_name: str,
     output_dir: str,
+    verbose: int,
 ):
+    # Setup logging level
+    logging_setup(verbose)
+    log = logging.getLogger(__name__)
+
     if product_name not in MANIFEST_FILE_URLS.keys():
         raise NotImplementedError(
             f"Manifest file url not configured for the product {product_name}"

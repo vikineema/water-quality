@@ -1,3 +1,7 @@
+"""
+Utilities for interacting with local, cloud (S3, GCS), and HTTP filesystems
+"""
+
 import logging
 import os
 import posixpath
@@ -152,3 +156,37 @@ def download_file(url: str, output_file_path: str, verbose: bool = False):
 
     if verbose:
         log.info(f"Downloaded {output_file_path}")
+
+
+def get_gdal_vsi_prefix(file_path) -> str:
+    # Based on file extension
+    _, file_extension = os.path.splitext(file_path)
+    if file_extension in [".zip"]:
+        vsi_prefix_1 = "vsizip"
+    elif file_extension in [".gz"]:
+        vsi_prefix_1 = "vsigzip"
+    elif file_extension in [".tar", ".tgz"]:
+        vsi_prefix_1 = "vsitar"
+    elif file_extension in [".7z"]:
+        vsi_prefix_1 = "vsi7z"
+    elif file_extension in [".rar"]:
+        vsi_prefix_1 = "vsirar"
+    else:
+        vsi_prefix_1 = ""
+
+    if vsi_prefix_1:
+        vsi_prefix_1_file_path = f"/{vsi_prefix_1}/{file_path}"
+    else:
+        vsi_prefix_1_file_path = file_path
+
+    # Network based
+    if is_local_path(file_path):
+        return vsi_prefix_1_file_path
+    elif is_http_url(file_path):
+        return f"/vsicurl/{vsi_prefix_1_file_path}"
+    elif is_s3_path(file_path):
+        return f"/vsis3/{vsi_prefix_1_file_path}"
+    elif is_gcsfs_path(file_path):
+        return f"/vsigs/{vsi_prefix_1_file_path}"
+    else:
+        NotImplementedError()
