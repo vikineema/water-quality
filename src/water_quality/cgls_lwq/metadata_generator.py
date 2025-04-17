@@ -97,6 +97,11 @@ def get_eo3_dataset_doc_file_path(
     type=int,
     help="Sequential index which will be used to define the range of geotiffs the pod will work with.",
 )
+@click.option(
+    "--write-eo3/--no-write-eo3",
+    default=False,
+    help="Whether to write eo3 dataset documents before they are converted to stac.",
+)
 @click.option("-v", "--verbose", default=1, count=True)
 def create_stac_files(
     product_name: str,
@@ -106,6 +111,7 @@ def create_stac_files(
     max_parallel_steps: int,
     worker_idx: int,
     verbose: int,
+    write_eo3: bool,
 ):
     # Setup logging level
     logging_setup(verbose)
@@ -138,7 +144,6 @@ def create_stac_files(
     log.info(f"Generating stac files for the product {product_name}")
 
     # Write the eo3 dataset document to disk
-    write_eo3_dataset_doc = False
 
     for idx, dataset_path in enumerate(dataset_paths):
         log.info(f"Generating stac file for {dataset_path} {idx + 1}/{len(dataset_paths)}")
@@ -156,13 +161,13 @@ def create_stac_files(
 
         # Dataset docs
         dataset_doc_output_path = get_eo3_dataset_doc_file_path(
-            "tmp", dataset_path, write_eo3_dataset_doc
+            stac_output_dir, dataset_path, write_eo3
         )
 
         dataset_doc = prepare_dataset(dataset_path, product_yaml, dataset_doc_output_path)
 
-        if write_eo3_dataset_doc:
-            to_path(dataset_doc_output_path, dataset_doc)
+        if write_eo3:
+            to_path(Path(dataset_doc_output_path), dataset_doc)
 
         # Convert dataset doc to stac item
         stac_item = to_stac_item(

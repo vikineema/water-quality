@@ -14,14 +14,17 @@ import rioxarray
 def parse_netcdf_url(netcdf_url: str) -> tuple[str]:
     # Get the file name
     filename = posixpath.basename(urlparse(netcdf_url).path)
+
     # Get the file extension
     _, extension = os.path.splitext(filename)
+
     # File naming convention in
     # c_gls_<Acronym>_<YYYYMMDDHHmm>_<AREA>_<SENSOR>_<Version>.<EXTENSION>
-    filename_prefix = "c_gls_"
+    filename_prefix = "c_gls"
     acronym, date, area, sensor, version = (
-        filename.lstrip(filename_prefix).rstrip(extension).split("_")
+        filename.removeprefix(filename_prefix + "_").removesuffix(extension).split("_")
     )
+    extension = extension.removeprefix(".")
     return filename_prefix, acronym, date, area, sensor, version, extension
 
 
