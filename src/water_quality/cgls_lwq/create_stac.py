@@ -1,12 +1,13 @@
 """
 Create per dataset metadata (stac files) for the Copernicus Global Land Service -
-Lake Water Quality 2002-2012 (raster 300 m), global, 10-daily – version 1 product
+Lake Water Quality datasets.
 """
 
 import json
 import logging
 import os
 import sys
+from pathlib import Path
 
 import click
 import numpy as np
@@ -23,12 +24,13 @@ from water_quality.logs import logging_setup
 
 @click.command(
     "create-stac-files",
-    help="Create per dataset metadata (stac files) for CLMS Lake Quality datasets.",
+    help="Create per dataset metadata (stac files) for Copernicus Global "
+    "Land Service Lake Water Quality datasets.",
     no_args_is_help=True,
 )
 @click.option(
     "--product-name",
-    type=click.Choice(["cgls_LWQ300_v1_300"], case_sensitive=True),
+    type=click.Choice(list(MANIFEST_FILE_URLS.keys()), case_sensitive=True),
     help="Name of the product to generate the stac item files for",
 )
 @click.option(
@@ -94,3 +96,8 @@ def create_stac_files(
 
     for idx, dataset_path in enumerate(dataset_paths):
         log.info(f"Generating stac file for {dataset_path} {idx + 1}/{len(dataset_paths)}")
+
+        if is_local_path(dataset_path):
+            dataset_path = Path(dataset_path).resolve()
+
+        # Define stac file

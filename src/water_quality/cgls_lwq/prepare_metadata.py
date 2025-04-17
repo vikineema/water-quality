@@ -3,54 +3,17 @@ Prepare eo3 metadata for a Copernicus Global Land Service -
 Lake Water Quality 2002-2012 (raster 300 m), global, 10-daily – version 1 dataset
 """
 
-import os
-import posixpath
 import warnings
 from datetime import datetime
 from itertools import chain
-from urllib.parse import urlparse
 
-import rasterio
-import rioxarray
 from eodatasets3.images import ValidDataMethod
 from eodatasets3.model import DatasetDoc
 from odc.apps.dc_tools._docs import odc_uuid
 
 from water_quality.cgls_lwq.constants import MEASUREMENTS
+from water_quality.cgls_lwq.netcdf import get_common_attrs, get_netcdf_subdatasets, parse_netcdf_url
 from water_quality.easi_assemble import EasiPrepare
-
-
-def parse_netcdf_url(netcdf_url: str) -> tuple[str]:
-    # Get the file name
-    filename = posixpath.basename(urlparse(netcdf_url).path)
-    # Get the file extension
-    _, extension = os.path.splitext(filename)
-    # File naming convention in
-    # c_gls_<Acronym>_<YYYYMMDDHHmm>_<AREA>_<SENSOR>_<Version>.<EXTENSION>
-    filename_prefix = "c_gls_"
-    acronym, date, area, sensor, version = (
-        filename.lstrip(filename_prefix).rstrip(extension).split("_")
-    )
-    return filename_prefix, acronym, date, area, sensor, version, extension
-
-
-def get_common_attrs(netcdf_url: str) -> dict:
-    common_attrs = rioxarray.open_rasterio(netcdf_url).attrs
-    return common_attrs
-
-
-def get_subdataset_variable(netcdf_uri: str) -> tuple[str]:
-    # format driver:/vsiprefix/URL[:subdataset_variable]
-    subdataset_variable = netcdf_uri.split(":")[-1]
-    return subdataset_variable
-
-
-def get_netcdf_subdatasets(netcdf_url: str) -> list[str]:
-    with rasterio.open(netcdf_url, "r") as src:
-        subdatasets = src.subdatasets
-
-    subdataset_variables = [get_subdataset_variable(i) for i in subdatasets]
-    return subdataset_variables
 
 
 def prepare_dataset(
