@@ -1,7 +1,7 @@
 import click
 
-from water_quality.cgls_lwq.create_stac import create_stac_files
 from water_quality.cgls_lwq.get_storage_attributes import get_storage_parameters
+from water_quality.cgls_lwq.metadata_generator import create_stac_files
 
 
 @click.group(

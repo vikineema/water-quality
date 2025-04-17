@@ -150,7 +150,7 @@ def download_file(url: str, output_file_path: str, verbose: bool = False):
 
     # Create the parent directories if they do not exist
     parent_dir = fs_output_file_path._parent(output_file_path)
-    fs_output_file_path.makedirs(parent_dir)
+    fs_output_file_path.makedirs(parent_dir, exist_ok=True)
 
     fs_url.get(url, output_file_path)
 
