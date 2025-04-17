@@ -15,11 +15,13 @@ from water_quality.logs import logging_setup
 
 
 @click.command(
-    "get-storage-parameters", help="Get common parameters for datasets.", no_args_is_help=True
+    "get-common-raster-attrs",
+    help="Get common attrs for all datasets for a CGLS Lake Water Quality product.",
+    no_args_is_help=True,
 )
 @click.option(
     "--product-name",
-    type=click.Choice(["cgls_LWQ300_v1_300"], case_sensitive=True),
+    type=click.Choice(list(MANIFEST_FILE_URLS.keys()), case_sensitive=True),
     help="Name of the product to get storage parameters for",
 )
 @click.option(
@@ -28,7 +30,7 @@ from water_quality.logs import logging_setup
     help="Directory to write the unique storage parameters text file to",
 )
 @click.option("-v", "--verbose", default=1, count=True)
-def get_storage_parameters(
+def get_common_raster_attrs(
     product_name: str,
     output_dir: str,
     verbose: int,

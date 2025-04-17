@@ -105,7 +105,7 @@ def prepare_dataset(
     p.properties[f"{custom_prefix}:processor"] = common_attrs["processor"]
     p.properties[f"{custom_prefix}:product_type"] = common_attrs["product_type"]
     p.properties[f"{custom_prefix}:title"] = common_attrs["title"]
-    p.properties[f"{custom_prefix}:trackingID"] = common_attrs["trackingID"]
+    p.properties[f"{custom_prefix}:trackingid"] = common_attrs["trackingID"]
 
     # Check all the measurements of interest are defined in the product file
     assert set(MEASUREMENTS).issubset(set(chain.from_iterable(p.get_product_measurements())))
