@@ -42,7 +42,7 @@ def prepare_dataset(
     common_attrs = get_common_attrs(p.dataset_path)
 
     ## File format of preprocessed data
-    if extension in [".nc"]:
+    if extension in ["nc"]:
         file_format = "NetCDF"
 
     ## IDs and Labels
