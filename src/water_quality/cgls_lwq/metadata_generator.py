@@ -30,7 +30,7 @@ from water_quality.logs import logging_setup
 
 def get_stac_item_destination_url(output_dir: str, netcdf_url: str) -> str:
     filename_prefix, acronym, date, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
-    date = datetime.strptime(date, "%d-%b-%Y %H:%M:%S")
+    date = datetime.strptime(date, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
     file_name = f"{filename_prefix}_{acronym}_{date}_{area}_{sensor}_{version}.stac-item.json"
@@ -48,7 +48,7 @@ def get_eo3_dataset_doc_file_path(
     output_dir: str, netcdf_url: str, write_eo3_dataset_doc: bool
 ) -> str:
     filename_prefix, acronym, date, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
-    date = datetime.strptime(date, "%d-%b-%Y %H:%M:%S")
+    date = datetime.strptime(date, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
     file_name = f"{filename_prefix}_{acronym}_{date}_{area}_{sensor}_{version}.odc-metadata.yaml"
