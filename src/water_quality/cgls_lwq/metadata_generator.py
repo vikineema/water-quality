@@ -84,22 +84,25 @@ def get_eo3_dataset_doc_file_path(
     type=str,
     help="Directory to write the stac files docs to",
 )
-@click.option("--overwrite/--no-overwrite", default=False)
+@click.option("--overwrite/--no-overwrite", default=False, show_default=True)
 @click.option(
     "--max-parallel-steps",
     default=1,
+    show_default=True,
     type=int,
     help="Maximum number of parallel steps/pods to have in the workflow.",
 )
 @click.option(
     "--worker-idx",
     default=0,
+    show_default=True,
     type=int,
     help="Sequential index which will be used to define the range of geotiffs the pod will work with.",
 )
 @click.option(
     "--write-eo3/--no-write-eo3",
     default=False,
+    show_default=True,
     help="Whether to write eo3 dataset documents before they are converted to stac.",
 )
 @click.option("-v", "--verbose", default=1, count=True)

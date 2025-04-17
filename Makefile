@@ -62,3 +62,12 @@ setup-explorer: ## Setup the datacube explorer
 explorer-refresh-products:
 	docker compose exec -T explorer cubedash-gen --init --all
 
+# Generate stac files
+create-stac-files:
+	mprof run cgls-lwq  create-stac-files \
+	--product-name=cgls_lwq300_2002_2012 \
+	--product-yaml=products/cgls_lwq300_2002_2012.odc-product.yaml \
+	--stac-output-dir=data/cgls_lwq300_2002_2012 \
+	--no-overwrite \
+	--write-eo3 \
+	-vvv
