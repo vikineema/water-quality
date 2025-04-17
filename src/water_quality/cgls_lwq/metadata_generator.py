@@ -29,11 +29,11 @@ from water_quality.logs import logging_setup
 
 
 def get_stac_item_destination_url(output_dir: str, netcdf_url: str) -> str:
-    filename_prefix, acronym, date, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
-    date = datetime.strptime(date, "%Y%m%d%H%M%S")
+    filename_prefix, acronym, date_str, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
+    date = datetime.strptime(date_str, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
-    file_name = f"{filename_prefix}_{acronym}_{date}_{area}_{sensor}_{version}.stac-item.json"
+    file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}.stac-item.json"
 
     parent_dir = join_urlpath(output_dir, year, month)
     if not check_directory_exists(parent_dir):
@@ -47,11 +47,13 @@ def get_stac_item_destination_url(output_dir: str, netcdf_url: str) -> str:
 def get_eo3_dataset_doc_file_path(
     output_dir: str, netcdf_url: str, write_eo3_dataset_doc: bool
 ) -> str:
-    filename_prefix, acronym, date, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
-    date = datetime.strptime(date, "%Y%m%d%H%M%S")
+    filename_prefix, acronym, date_str, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
+    date = datetime.strptime(date_str, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
-    file_name = f"{filename_prefix}_{acronym}_{date}_{area}_{sensor}_{version}.odc-metadata.yaml"
+    file_name = (
+        f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}.odc-metadata.yaml"
+    )
 
     parent_dir = join_urlpath(output_dir, year, month)
     if write_eo3_dataset_doc:
