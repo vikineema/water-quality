@@ -34,11 +34,11 @@ dependencies = [
   "numpy",
   "odc-apps-dc-tools",
   "odc-geo",
+  "PyYAML",
   "requests",
   "rioxarray",
   "s3fs",
-  "tqdm",
-  "PyYAML"
+  "tqdm"
   ]
 [project.optional-dependencies]
 dev = [
