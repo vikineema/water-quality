@@ -24,8 +24,21 @@ classifiers = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-  "datacube",
-  "geopandas"
+  "aiobotocore[awscli,boto3]",
+  "click",
+  "datacube[performance,distributed,s3,netcdf]",
+  "eodatasets3",
+  "fsspec",
+  "geopandas",
+  "gcsfs",
+  "numpy",
+  "odc-apps-dc-tools",
+  "odc-geo",
+  "requests",
+  "rioxarray",
+  "s3fs",
+  "tqdm",
+  "PyYAML"
   ]
 [project.optional-dependencies]
 dev = [
