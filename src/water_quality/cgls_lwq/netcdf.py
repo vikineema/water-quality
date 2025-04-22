@@ -28,12 +28,7 @@ def parse_netcdf_url(netcdf_url: str) -> tuple[str]:
     return filename_prefix, acronym, date, area, sensor, version, extension
 
 
-def get_common_attrs(netcdf_url: str) -> dict:
-    common_attrs = rioxarray.open_rasterio(netcdf_url).attrs
-    return common_attrs
-
-
-def get_subdataset_variable(netcdf_uri: str) -> tuple[str]:
+def get_netcdf_subdataset_variable(netcdf_uri: str) -> tuple[str]:
     # subdaset uri format driver:/vsiprefix/URL[:subdataset_variable]
     subdataset_variable = netcdf_uri.split(":")[-1]
     return subdataset_variable
@@ -42,4 +37,5 @@ def get_subdataset_variable(netcdf_uri: str) -> tuple[str]:
 def get_netcdf_subdatasets_uris(netcdf_url: str) -> list[str]:
     with rasterio.open(netcdf_url, "r") as src:
         subdatasets = src.subdatasets
-    return subdatasets
+    netcdf_subdatasets_uris = {get_netcdf_subdataset_variable(i): i for i in subdatasets}
+    return netcdf_subdatasets_uris

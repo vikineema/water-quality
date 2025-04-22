@@ -10,6 +10,7 @@ from pyproj import CRS
 from tqdm import tqdm
 
 from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS, MEASUREMENTS
+from water_quality.cgls_lwq.netcdf import get_netcdf_subdatasets_uris
 from water_quality.io import get_filesystem, is_local_path, join_urlpath
 from water_quality.logs import logging_setup
 
@@ -60,34 +61,35 @@ def get_common_raster_attrs(
     log.info(f"Found {len(netcdf_urls)} netcdf urls in the manifest file")
 
     storage_parameters_list = []
-    for url in tqdm(iterable=netcdf_urls, total=len(netcdf_urls)):
-        # Load the netcdf url
-        ds = rioxarray.open_rasterio(url)
-        # Add a geobox to the dataset
-        ds = assign_crs(ds, ds.rio.crs, crs_coord_name="crs")
-
-        crs = ":".join(CRS(ds.odc.geobox.crs).to_authority())  # Authority name: code for crs
-        res_x = ds.odc.geobox.resolution.x
-        res_y = ds.odc.geobox.resolution.y
-
+    for netdf_url in tqdm(iterable=netcdf_urls, total=len(netcdf_urls)):
+        # Get the subdatasets in the netcdf
+        netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netdf_url)
+        # Filter by required measurements
+        netcdf_subdatasets_uris = {
+            k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS
+        }
         measurement_attrs = {}
-        for var in MEASUREMENTS:
-            da = ds[var]
+        for var, subdatasets_uri in netcdf_subdatasets_uris:
+            # Load the netcdf url
+            da = rioxarray.open_rasterio(subdatasets_uri)
+            # Add a geobox to the dataset
+            da = assign_crs(da, da.rio.crs, crs_coord_name="crs")
+
+            crs = ":".join(CRS(da.odc.geobox.crs).to_authority())  # Authority name: code for crs
+            res_x = da.odc.geobox.resolution.x
+            res_y = da.odc.geobox.resolution.y
             measurement_attrs[var] = dict(
-                dtye=str(da.dtype),
+                crs=crs,
+                res_x=str(res_x),
+                res_y=str(res_y),
+                dtype=str(da.dtype),
                 units=da.attrs["units"],
                 no_data_value=str(da.attrs["_FillValue"]),
                 add_offset=str(da.attrs["add_offset"]),
                 scale_factor=str(da.attrs["scale_factor"]),
             )
 
-        item = {
-            "crs": crs,
-            "res_x": str(res_x),
-            "res_y": str(res_y),
-            "measurements": measurement_attrs,
-        }
-        storage_parameters_list.append(item)
+        storage_parameters_list.append(measurement_attrs)
 
     # Convert dicts to JSON strings to create a unique set
     unique_storage_parameters = [
