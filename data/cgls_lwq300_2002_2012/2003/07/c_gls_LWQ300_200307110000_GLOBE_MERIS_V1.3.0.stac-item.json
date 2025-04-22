@@ -1,0 +1,351 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+  ],
+  "id": "fff5ed71-f001-5464-9090-1bd84bb028a9",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          180.00000000000003,
+          -90.0
+        ],
+        [
+          180.00000000000003,
+          90.0
+        ],
+        [
+          -180.00000000000003,
+          90.0
+        ],
+        [
+          -180.00000000000003,
+          -90.0
+        ],
+        [
+          180.00000000000003,
+          -90.0
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    -180.00000000000003,
+    -90.0,
+    180.00000000000003,
+    90.0
+  ],
+  "properties": {
+    "odc:dataset_version": "V1.3.0",
+    "platform": "envisat",
+    "instruments": [
+      "meris"
+    ],
+    "odc:producer": "https://pml.ac.uk/, https://www.brockmann-consult.de/",
+    "odc:product_family": "cgls_water_quality",
+    "start_datetime": "2003-07-11T00:00:00Z",
+    "end_datetime": "2003-07-20T23:59:59Z",
+    "created": "2020-07-14T12:46:24.220995Z",
+    "odc:file_format": "NetCDF",
+    "odc:product": "cgls_lwq300_2002_2012",
+    "cgls_lwq:processing_centre": "Plymouth Marine Laboratory",
+    "cgls_lwq:processing_level": "L3_Aggregated",
+    "cgls_lwq:processor": "Calimnos",
+    "cgls_lwq:product_type": "CF-1.4",
+    "cgls_lwq:title": "Water Quality, Calimnos L3 Aggregated product",
+    "cgls_lwq:trackingid": "8dc6cb7f-d6e8-4967-b399-311b963eb63b",
+    "proj:code": null,
+    "proj:wkt2": "GEOGCS[\"WGS84(DD)\",DATUM[\"WGS84\",SPHEROID[\"WGS84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433],AXIS[\"Longitude\",EAST],AXIS[\"Latitude\",NORTH]]",
+    "proj:shape": [
+      80640,
+      161280
+    ],
+    "proj:transform": [
+      0.0022321428571428575,
+      0.0,
+      -180.00000000000003,
+      0.0,
+      -0.002232142857142857,
+      90.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "datetime": "2003-07-11T00:00:00Z"
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "/home/jovyan/dev/WaterQuality/water-quality/data/cgls_lwq300_2002_2012/2003/07/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.stac-item.json",
+      "type": "application/json"
+    }
+  ],
+  "assets": {
+    "first_obs": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "first_obs",
+      "eo:bands": [
+        {
+          "name": "first_obs"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "last_obs": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "last_obs",
+      "eo:bands": [
+        {
+          "name": "last_obs"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "n_obs_quality_risk_sum": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "n_obs_quality_risk_sum",
+      "eo:bands": [
+        {
+          "name": "n_obs_quality_risk_sum"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "num_obs": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "num_obs",
+      "eo:bands": [
+        {
+          "name": "num_obs"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "stats_valid_obs_tsi_sum": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "stats_valid_obs_tsi_sum",
+      "eo:bands": [
+        {
+          "name": "stats_valid_obs_tsi_sum"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "stats_valid_obs_turbidity_sum": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "stats_valid_obs_turbidity_sum",
+      "eo:bands": [
+        {
+          "name": "stats_valid_obs_turbidity_sum"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "trophic_state_index": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "trophic_state_index",
+      "eo:bands": [
+        {
+          "name": "trophic_state_index"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "turbidity_mean": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "turbidity_mean",
+      "eo:bands": [
+        {
+          "name": "turbidity_mean"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "turbidity_sigma": {
+      "href": "https://globalland.cgls.dev/webResources/catalogTree/netcdf/lake_water_quality/lwq_300m_v1_10daily-reproc/2003/20030711/c_gls_LWQ300_200307110000_GLOBE_MERIS_V1.3.0.nc",
+      "type": "application/x-netcdf",
+      "title": "turbidity_sigma",
+      "eo:bands": [
+        {
+          "name": "turbidity_sigma"
+        }
+      ],
+      "proj:code": null,
+      "proj:shape": [
+        80640,
+        161280
+      ],
+      "proj:transform": [
+        0.0022321428571428575,
+        0.0,
+        -180.00000000000003,
+        0.0,
+        -0.002232142857142857,
+        90.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "collection": "cgls_lwq300_2002_2012"
+}
