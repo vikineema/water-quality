@@ -13,6 +13,8 @@ up: ## Bring up your Docker environment
 	docker compose up -d jupyter
 	docker compose up -d geoserver
 	docker compose up -d pgadmin4
+	make init
+	make install-python-pkgs
 
 reset: ## Stop all services, delete volumes, recreate volumes then restart all the servces 
 	make  down
