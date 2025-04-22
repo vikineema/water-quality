@@ -38,7 +38,8 @@ dependencies = [
   "requests",
   "rioxarray",
   "s3fs",
-  "tqdm"
+  "tqdm", 
+  "h5netcdf" # For sandbox to work with netcdf files
   ]
 [project.optional-dependencies]
 dev = [
