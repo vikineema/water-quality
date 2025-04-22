@@ -34,14 +34,12 @@ def get_common_attrs(netcdf_url: str) -> dict:
 
 
 def get_subdataset_variable(netcdf_uri: str) -> tuple[str]:
-    # format driver:/vsiprefix/URL[:subdataset_variable]
+    # subdaset uri format driver:/vsiprefix/URL[:subdataset_variable]
     subdataset_variable = netcdf_uri.split(":")[-1]
     return subdataset_variable
 
 
-def get_netcdf_subdatasets(netcdf_url: str) -> list[str]:
+def get_netcdf_subdatasets_uris(netcdf_url: str) -> list[str]:
     with rasterio.open(netcdf_url, "r") as src:
         subdatasets = src.subdatasets
-
-    subdataset_variables = [get_subdataset_variable(i) for i in subdatasets]
-    return subdataset_variables
+    return subdatasets
