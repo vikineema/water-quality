@@ -12,8 +12,15 @@ from eodatasets3.model import DatasetDoc
 from odc.apps.dc_tools._docs import odc_uuid
 
 from water_quality.cgls_lwq.constants import MEASUREMENTS
-from water_quality.cgls_lwq.netcdf import get_common_attrs, get_netcdf_subdatasets, parse_netcdf_url
+from water_quality.cgls_lwq.netcdf import get_netcdf_subdatasets_names, parse_netcdf_url
 from water_quality.easi_assemble import EasiPrepare
+
+
+def get_common_attrs(netcdf_url: str) -> dict:
+    import rioxarray
+
+    common_attrs = rioxarray.open_rasterio(netcdf_url).attrs
+    return common_attrs
 
 
 def prepare_dataset(
@@ -110,7 +117,7 @@ def prepare_dataset(
     # Check all the measurements of interest are defined in the product file
     assert set(MEASUREMENTS).issubset(set(chain.from_iterable(p.get_product_measurements())))
     # Check all the measurements of interest are in the dataset file
-    assert set(MEASUREMENTS).issubset(set(get_netcdf_subdatasets(p.dataset_path)))
+    assert set(MEASUREMENTS).issubset(set(get_netcdf_subdatasets_names(p.dataset_path)))
 
     # Add measurement paths
     for measurment in MEASUREMENTS:
