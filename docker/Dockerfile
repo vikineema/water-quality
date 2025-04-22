@@ -12,7 +12,7 @@ RUN  micromamba install --yes --name base  --file /tmp/environment.yaml --verbos
     && micromamba env export --name base --explicit
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-# Clear cache 
+# Clear pip cache 
 RUN micromamba run --name base pip cache purge
 
 FROM ubuntu:jammy
@@ -49,16 +49,17 @@ RUN useradd --no-log-init --create-home --shell /bin/bash --no-user-group --gid 
 COPY --chown=$NB_UID:$NB_GID --from=micromamba /opt/conda $PYTHON_ENV
 
 ## Jupyter config
-USER $NB_USER
-# Enable server extensions
-RUN jupyter server extension enable --py --sys-prefix jupyterlab_iframe jupyter_resource_usage \
-    && jupyter lab build
 USER root
 ENV JUPYTERLAB_DIR=$PYTHON_ENV/share/jupyter/lab 
 COPY assets/overrides.json $JUPYTERLAB_DIR/settings/
 COPY assets/jupyter_lab_config.py $PYTHON_ENV/etc/jupyter/
+# Enable server extensions
+USER $NB_USER
+RUN jupyter server extension enable --py --sys-prefix jupyterlab_iframe jupyter_resource_usage \
+    && jupyter lab build
 
 # Clean up
+USER root
 RUN apt clean autoclean -y \
     && apt autoremove -y \
     && rm -rf /var/lib/{apt,dpkg,cache}/
