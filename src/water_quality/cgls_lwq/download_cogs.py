@@ -25,6 +25,7 @@ from water_quality.io import (
     check_directory_exists,
     check_file_exists,
     get_filesystem,
+    is_local_path,
     join_urlpath,
 )
 from water_quality.logs import logging_setup
@@ -157,8 +158,12 @@ def download_cogs(
             da = da.sel(y=slice(uly, lry), x=slice(ulx, lrx))
 
             # Write cog files
-            cog_bytes = da.odc.write_cog(fname=":mem:", overwrite=overwrite, tags=attrs)
-            fs = get_filesystem(subdaset_cog_file, anon=False)
-            with fs.open(subdaset_cog_file, "wb") as f:
-                f.write(cog_bytes)
+            if is_local_path(subdaset_cog_file):
+                da.odc.write_cog(fname=subdaset_cog_file, overwrite=overwrite, tags=attrs)
+            else:
+                cog_bytes = da.odc.write_cog(fname=":mem:", overwrite=overwrite, tags=attrs)
+                fs = get_filesystem(subdaset_cog_file, anon=False)
+                with fs.open(subdaset_cog_file, "wb") as f:
+                    f.write(cog_bytes)
+
             log.info(f"Written COG to {subdaset_cog_file}")
