@@ -73,3 +73,10 @@ create-stac-files:
 	--no-overwrite \
 	--write-eo3 \
 	-vvv
+
+download-cog-files:
+	mprof run cgls-lwq  download_cogs \
+	--product-name=cgls_lwq300_2002_2012 \
+	--cog-output-dir=data/cgls_lwq300_2002_2012/cogs \
+	--no-overwrite \
+	-vvv
