@@ -81,8 +81,8 @@ create-stac-files:
 download-cog-files:
 	mprof run cgls-lwq  download-cogs \
 	--product-name=cgls_lwq300_2002_2012 \
-	--cog-output-dir=data/cgls_lwq300_2002_2012/cogs \
-	--no-overwrite \
+	--cog-output-dir=data/cgls_lwq300_2002_2012/tiled_cogs \
+	--overwrite \
 	-vvv
 
 # index-wofs-all-time-summary
