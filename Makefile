@@ -14,6 +14,7 @@ up: ## Bring up your Docker environment
 	docker compose up -d geoserver
 	docker compose up -d pgadmin4
 	make init
+	make add-products
 	make install-python-pkgs
 
 reset: ## Stop all services, delete volumes, recreate volumes then restart all the servces 
@@ -34,7 +35,10 @@ install-python-pkgs:
 lint-src:
 	ruff check --select I --fix src/
 	ruff format --verbose src/
-	
+
+add-products:
+	docker compose exec -T jupyter dc-sync-products products/products.csv
+
 ## Jupyter service
 start-jupyter: ## To be used in micromamba-shell
 	cp docker/assets/jupyter_lab_config.py ${CONDA_PREFIX}/etc/jupyter/jupyter_lab_config.py
@@ -80,3 +84,12 @@ download-cog-files:
 	--cog-output-dir=data/cgls_lwq300_2002_2012/cogs \
 	--no-overwrite \
 	-vvv
+
+# index-wofs-all-time-summary
+index-wofs_ls_summary_alltime:
+	@echo "$$(date) Start with wofs_ls_summary_alltime"
+	docker compose exec -T jupyter stac-to-dc \
+		--catalog-href=https://explorer.digitalearth.africa/stac/ \
+		--collections=wofs_ls_summary_alltime 
+	@echo "$$(date) Done with wofs_ls_summary_alltime"
+
