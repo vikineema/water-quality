@@ -144,7 +144,7 @@ def download_cogs(
 
     # TODO: Remove filter by year
     # filter to 2011 only
-    netcdf_urls = [i for i in netcdf_urls if "/2011/" in i]
+    netcdf_urls = [i for i in netcdf_urls if "201101" in i]
     log.info(f"Found {len(netcdf_urls)} netcdf urls in the manifest file")
 
     # Split files equally among the workers
