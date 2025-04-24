@@ -62,14 +62,22 @@ def get_output_cog_url(
     date = datetime.strptime(date_str, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
+    day = f"{date.day:02d}"
 
     if tile_index:
         tile_index_str = get_tile_index_str_from_tuple(tile_index)
         tile_index_str_x, tile_index_str_y = tile_index_str.split("_")
-        parent_dir = join_urlpath(output_dir, tile_index_str_x, tile_index_str_y, year, month)
-        file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{subdataset_variable}_{tile_index_str_x}{tile_index_str_y}.tif"
+        parent_dir = join_urlpath(
+            output_dir,
+            tile_index_str_x,
+            tile_index_str_y,
+            year,
+            month,
+            day,
+        )
+        file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{tile_index_str_x}{tile_index_str_y}_{subdataset_variable}.tif"
     else:
-        parent_dir = join_urlpath(output_dir, year, month)
+        parent_dir = join_urlpath(output_dir, year, month, day)
         file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{subdataset_variable}.tif"
 
     if not check_directory_exists(parent_dir):
