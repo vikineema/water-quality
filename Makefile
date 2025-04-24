@@ -68,6 +68,15 @@ setup-explorer: ## Setup the datacube explorer
 explorer-refresh-products:
 	docker compose exec -T explorer cubedash-gen --init --all
 
+# index-wofs-all-time-summary
+index-wofs_ls_summary_alltime:
+	@echo "$$(date) Start with wofs_ls_summary_alltime"
+	docker compose exec -T jupyter stac-to-dc \
+		--catalog-href=https://explorer.digitalearth.africa/stac/ \
+		--collections=wofs_ls_summary_alltime 
+	@echo "$$(date) Done with wofs_ls_summary_alltime"
+
+
 # Generate stac files
 create-stac-files:
 	mprof run cgls-lwq  create-stac-files \
@@ -85,11 +94,8 @@ download-cog-files:
 	--no-overwrite \
 	-vvv
 
-# index-wofs-all-time-summary
-index-wofs_ls_summary_alltime:
-	@echo "$$(date) Start with wofs_ls_summary_alltime"
-	docker compose exec -T jupyter stac-to-dc \
-		--catalog-href=https://explorer.digitalearth.africa/stac/ \
-		--collections=wofs_ls_summary_alltime 
-	@echo "$$(date) Done with wofs_ls_summary_alltime"
-
+upload-to-s3:
+	find data/cgls_lwq300_2002_2012/*/*/2011/01 -type f | while read -r file; do \
+		relpath=$$(echo "$$file" | sed 's|^data/||'); \
+		aws s3 cp --dry-run "$$file" "s3://$(S3_BUCKET)/$$relpath"; \
+	done	
