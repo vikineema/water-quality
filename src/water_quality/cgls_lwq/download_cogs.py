@@ -3,6 +3,7 @@ Download the Copernicus Global Land Service Lake Water Quality datasets,
 crop and convert to Cloud Optimized Geotiffs, and push to an S3 bucket.
 """
 
+import json
 import logging
 import sys
 import warnings
@@ -163,55 +164,82 @@ def download_cogs(
         grid_res = 100
 
     tiles = get_africa_tiles(grid_res)
-
+    failed_tasks = []
     for idx, netcdf_url in enumerate(dataset_paths):
-        log.info(f"Generating cog files for {netcdf_url} {idx + 1}/{len(dataset_paths)}")
+        try:
+            log.info(f"Generating cog files for {netcdf_url} {idx + 1}/{len(dataset_paths)}")
 
-        # Get the subdatasets in the netcdf
-        netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netcdf_url)
-        # Filter by required measurements
-        netcdf_subdatasets_uris = {
-            k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS
-        }
-        # Check
-        assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS)
-
-        for var, subdataset_uri in netcdf_subdatasets_uris.items():
-            da = rioxarray.open_rasterio(subdataset_uri).squeeze()
-            da = assign_crs(da, da.rio.crs, crs_coord_name="crs")
-
-            # Get attributes to be used in tiled COGs
-            attrs = da.attrs
-            exclude = ["lon#", "lat#", "number_of_regions", "TileSize", "NETCDF", "coordinates"]
-            filtered_attrs = {
-                k: v
-                for k, v in attrs.items()
-                if not any(sub.lower() in k.lower() for sub in exclude)
+            # Get the subdatasets in the netcdf
+            netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netcdf_url)
+            # Filter by required measurements
+            netcdf_subdatasets_uris = {
+                k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS
             }
-            da.attrs = filtered_attrs
+            # Check
+            assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS)
 
-            # Crop the netcdf subdataset to each tile
-            with tqdm(iterable=tiles, desc=f"Cropping {var} subdataset", total=len(tiles)) as tiles:
-                for tile in tiles:
-                    tile_idx, tile_geobox = tile
-                    output_cog_url = get_output_cog_url(cog_output_dir, subdataset_uri, tile_idx)
-                    if not overwrite:
-                        if check_file_exists(output_cog_url):
-                            continue
+            for var, subdataset_uri in netcdf_subdatasets_uris.items():
+                da = rioxarray.open_rasterio(subdataset_uri).squeeze()
+                da = assign_crs(da, da.rio.crs, crs_coord_name="crs")
 
-                    cropped_da = da.odc.crop(tile_geobox.extent.to_crs(da.odc.geobox.crs))
+                # Get attributes to be used in tiled COGs
+                attrs = da.attrs
+                exclude = ["lon#", "lat#", "number_of_regions", "TileSize", "NETCDF", "coordinates"]
+                filtered_attrs = {
+                    k: v
+                    for k, v in attrs.items()
+                    if not any(sub.lower() in k.lower() for sub in exclude)
+                }
+                da.attrs = filtered_attrs
 
-                    # Write cog files
-                    if is_local_path(output_cog_url):
-                        cropped_da.odc.write_cog(
-                            fname=output_cog_url, overwrite=overwrite, tags=filtered_attrs
+                # Crop the netcdf subdataset to each tile
+                with tqdm(
+                    iterable=tiles, desc=f"Cropping {var} subdataset", total=len(tiles)
+                ) as tiles:
+                    for tile in tiles:
+                        tile_idx, tile_geobox = tile
+                        output_cog_url = get_output_cog_url(
+                            cog_output_dir, subdataset_uri, tile_idx
                         )
-                    else:
-                        cog_bytes = cropped_da.odc.write_cog(
-                            fname=":mem:", overwrite=overwrite, tags=filtered_attrs
-                        )
-                        fs = get_filesystem(output_cog_url, anon=False)
-                        with fs.open(output_cog_url, "wb") as f:
-                            f.write(cog_bytes)
+                        if not overwrite:
+                            if check_file_exists(output_cog_url):
+                                continue
 
-            log.info(f"Written COGs for {var} subdataset")
+                        cropped_da = da.odc.crop(tile_geobox.extent.to_crs(da.odc.geobox.crs))
+
+                        # Write cog files
+                        if is_local_path(output_cog_url):
+                            cropped_da.odc.write_cog(
+                                fname=output_cog_url, overwrite=overwrite, tags=filtered_attrs
+                            )
+                        else:
+                            cog_bytes = cropped_da.odc.write_cog(
+                                fname=":mem:", overwrite=overwrite, tags=filtered_attrs
+                            )
+                            fs = get_filesystem(output_cog_url, anon=False)
+                            with fs.open(output_cog_url, "wb") as f:
+                                f.write(cog_bytes)
+
+                log.info(f"Written COGs for {var} subdataset")
+        except Exception as error:
+            log.exception(error)
+            log.error(f"Failed to process netcdf {netcdf_url}")
+            failed_tasks.append(netcdf_url)
+
+    if failed_tasks:
+        failed_tasks_json_array = json.dumps(failed_tasks)
+
+        tasks_directory = "/tmp/"
+        failed_tasks_output_file = join_urlpath(tasks_directory, "failed_tasks")
+
+        fs = get_filesystem(path=tasks_directory, anon=False)
+
+        if not check_directory_exists(path=tasks_directory):
+            fs.mkdirs(path=tasks_directory, exist_ok=True)
+            log.info(f"Created directory {tasks_directory}")
+
+        with fs.open(failed_tasks_output_file, "a") as file:
+            file.write(failed_tasks_json_array + "\n")
+        log.info(f"Failed tasks written to {failed_tasks_output_file}")
+
+        raise RuntimeError(f"{len(failed_tasks)} tasks failed")
