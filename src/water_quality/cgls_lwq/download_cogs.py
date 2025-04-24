@@ -12,12 +12,11 @@ import click
 import numpy as np
 import requests
 import rioxarray
-from datacube.testutils.io import rio_slurp_xarray
 from odc.geo.xr import assign_crs
 from rasterio.errors import NotGeoreferencedWarning
 from tqdm import tqdm
 
-from water_quality.cgls_lwq.constants import AFRICA_BBOX, MANIFEST_FILE_URLS, MEASUREMENTS
+from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS, MEASUREMENTS
 from water_quality.cgls_lwq.netcdf import (
     get_netcdf_subdatasets_uris,
     parse_netcdf_subdatasets_uri,
@@ -132,11 +131,12 @@ def download_cogs(
 
     # Read urls available for the product
     r = requests.get(MANIFEST_FILE_URLS[product_name])
-    netcdf_urls = r.text.splitlines()
+    netcdf_urls = [i.strip() for i in r.text.splitlines()]
+    netcdf_urls.sort()
 
     # TODO: Remove filter by year
     # filter to 2011 only
-    netcdf_urls = [i for i in netcdf_urls if "/2011/" in i]
+    netcdf_urls = [i for i in netcdf_urls if "20110101" in i]
     log.info(f"Found {len(netcdf_urls)} netcdf urls in the manifest file")
 
     # Split files equally among the workers
@@ -164,11 +164,11 @@ def download_cogs(
 
     tiles = get_africa_tiles(grid_res)
 
-    for idx, netdf_url in enumerate(dataset_paths):
-        log.info(f"Generating cog files for {netdf_url} {idx + 1}/{len(dataset_paths)}")
+    for idx, netcdf_url in enumerate(dataset_paths):
+        log.info(f"Generating cog files for {netcdf_url} {idx + 1}/{len(dataset_paths)}")
 
         # Get the subdatasets in the netcdf
-        netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netdf_url)
+        netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netcdf_url)
         # Filter by required measurements
         netcdf_subdatasets_uris = {
             k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS
@@ -177,14 +177,18 @@ def download_cogs(
         assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS)
 
         for var, subdataset_uri in netcdf_subdatasets_uris.items():
+            da = rioxarray.open_rasterio(subdataset_uri).squeeze()
+            da = assign_crs(da, da.rio.crs, crs_coord_name="crs")
+
             # Get attributes to be used in tiled COGs
-            common_attrs = rioxarray.open_rasterio(subdataset_uri).attrs
-            exclude = ["lon#", "lat#", "number_of_regions", "TileSize", "NETCDF"]
+            attrs = da.attrs
+            exclude = ["lon#", "lat#", "number_of_regions", "TileSize", "NETCDF", "coordinates"]
             filtered_attrs = {
                 k: v
-                for k, v in common_attrs.items()
+                for k, v in attrs.items()
                 if not any(sub.lower() in k.lower() for sub in exclude)
             }
+            da.attrs = filtered_attrs
 
             # Crop the netcdf subdataset to each tile
             with tqdm(iterable=tiles, desc=f"Cropping {var} subdataset", total=len(tiles)) as tiles:
@@ -195,19 +199,19 @@ def download_cogs(
                         if check_file_exists(output_cog_url):
                             continue
 
-                    da = rio_slurp_xarray(subdataset_uri, tile_geobox)
+                    cropped_da = da.odc.crop(tile_geobox.extent.to_crs(da.odc.geobox.crs))
 
                     # Write cog files
                     if is_local_path(output_cog_url):
-                        da.odc.write_cog(
+                        cropped_da.odc.write_cog(
                             fname=output_cog_url, overwrite=overwrite, tags=filtered_attrs
                         )
                     else:
-                        cog_bytes = da.odc.write_cog(
+                        cog_bytes = cropped_da.odc.write_cog(
                             fname=":mem:", overwrite=overwrite, tags=filtered_attrs
                         )
                         fs = get_filesystem(output_cog_url, anon=False)
                         with fs.open(output_cog_url, "wb") as f:
                             f.write(cog_bytes)
 
-            log.info(f"Written COGs for {subdataset_uri}")
+            log.info(f"Written COGs for {var} subdataset")

@@ -94,9 +94,10 @@ def get_africa_tiles(grid_res: int | float) -> list:
     list
         List of tiles, each item contains the tile index and the tile geobox.
     """
+    multiplier = 10
     gridspec = GridSpec(
         crs="EPSG:6933",
-        tile_shape=XY(y=3200, x=3200),
+        tile_shape=XY(y=320 * multiplier, x=320 * multiplier),
         resolution=Resolution(y=-grid_res, x=grid_res),
         origin=XY(y=-7392000, x=-17376000),
     )
