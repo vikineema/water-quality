@@ -82,7 +82,7 @@ download-cog-files:
 	mprof run cgls-lwq  download-cogs \
 	--product-name=cgls_lwq300_2002_2012 \
 	--cog-output-dir=data/cgls_lwq300_2002_2012/new_tiling \
-	--overwrite \
+	--no-overwrite \
 	-vvv
 
 # index-wofs-all-time-summary
