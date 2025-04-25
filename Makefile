@@ -72,9 +72,9 @@ create-stac-files: ## Create per dataset metadata for a LWQ product
 	mprof run cgls-lwq  create-stac-files \
 	--cogs-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
 	--product-yaml=products/cgls_lwq300_2002_2012.odc-product.yaml \
-	--stac-output-dir=data/cgls_lwq300_2002_2012 \
+	--stac-output-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
 	--no-overwrite \
-	--write-eo3 \
+	--no-write-eo3 \
 	-vvv
 
 download-cog-files:
