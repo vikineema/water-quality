@@ -16,6 +16,7 @@ from eodatasets3.serialise import to_path  # noqa F401
 from eodatasets3.stac import to_stac_item
 
 from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS
+from water_quality.cgls_lwq.geotiff import parse_geotiff_url
 from water_quality.cgls_lwq.netcdf import parse_netcdf_url
 from water_quality.cgls_lwq.prepare_metadata import prepare_dataset
 from water_quality.io import (
@@ -28,14 +29,34 @@ from water_quality.io import (
 from water_quality.logs import logging_setup
 
 
-def get_stac_item_destination_url(output_dir: str, netcdf_url: str) -> str:
-    filename_prefix, acronym, date_str, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
+def get_stac_item_destination_url(output_dir: str, geotiff_url: str) -> str:
+    (
+        filename_prefix,
+        acronym,
+        date_str,
+        area,
+        sensor,
+        version,
+        tile_index_str,
+        subdataset_variable,
+        _,
+    ) = parse_geotiff_url(geotiff_url)
+
     date = datetime.strptime(date_str, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
-    file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}.stac-item.json"
+    day = f"{date.day:02d}"
 
-    parent_dir = join_urlpath(output_dir, year, month)
+    file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{tile_index_str}_{subdataset_variable}.stac-item.json"
+
+    parent_dir = join_urlpath(
+        output_dir,
+        tile_index_str_x,
+        tile_index_str_y,
+        year,
+        month,
+        day,
+    )
     if not check_directory_exists(parent_dir):
         fs = get_filesystem(parent_dir, anon=False)
         fs.makedirs(parent_dir, exist_ok=True)

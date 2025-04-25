@@ -1,4 +1,5 @@
 import os
+import posixpath
 import re
 
 from odc.geo import XY, Resolution
@@ -6,27 +7,49 @@ from odc.geo.geom import BoundingBox
 from odc.geo.gridspec import GridSpec
 
 from water_quality.cgls_lwq.constants import AFRICA_BBOX
+from water_quality.io import is_local_path
 
 
-def get_tile_index_tuple_from_str(string_: str) -> tuple[int, int]:
-    """
-    Get the tile index (x,y) from a string.
+def get_tile_index_str_tuple(string_: str) -> tuple[str]:
+    """Get the tile index in the string
+    format "{x:03d}","{y:03d}" from a string.
 
     Parameters
     ----------
     string_ : str
-        String to search for a tile index
+        String to search the tile index from.
 
     Returns
     -------
-    tuple[int, int]
-        Found tile index (x,y).
+    tuple[str]
+        Tile index in the string format "{x:03d}","{y:03d}" .
     """
     x_pattern = re.compile(r"x\d{3}")
     y_pattern = re.compile(r"y\d{3}")
 
     tile_index_x_str = re.search(x_pattern, string_).group(0)
     tile_index_y_str = re.search(y_pattern, string_).group(0)
+
+    return tile_index_x_str, tile_index_y_str
+
+
+def get_tile_index_int_tuple(string_: str) -> tuple[int, int]:
+    """
+    Get the tile index in the format (x,y) from a string
+    where x and y are integers.
+
+    Parameters
+    ----------
+    string_ : str
+        String to search the tile index from.
+
+    Returns
+    -------
+    tuple[int, int]
+        Tile index in the format (x,y) where x and y are integers.
+    """
+
+    tile_index_x_str, tile_index_y_str = get_tile_index_str_tuple(string_)
 
     tile_index_x = int(tile_index_x_str.lstrip("x"))
     tile_index_y = int(tile_index_y_str.lstrip("y"))
@@ -36,10 +59,9 @@ def get_tile_index_tuple_from_str(string_: str) -> tuple[int, int]:
     return tile_index
 
 
-def get_tile_index_str_from_tuple(tile_index_tuple: tuple[int, int]) -> str:
+def get_tile_index_str(tile_index_tuple: tuple[int, int]) -> str:
     """
-    Convert a tile index tuple into the tile index string format
-    x123_y123.
+    Convert a tile index tuple (x,y) into the string format "{x:03d}","{y:03d}" .
 
     Parameters
     ----------
@@ -49,12 +71,12 @@ def get_tile_index_str_from_tuple(tile_index_tuple: tuple[int, int]) -> str:
     Returns
     -------
     str
-        Tile index in string format x123_y123.
+        Tile index in string format "{x:03d}","{y:03d}" .
     """
 
     tile_index_x, tile_index_y = tile_index_tuple
 
-    tile_index_str = f"x{tile_index_x:03d}_y{tile_index_y:03d}"
+    tile_index_str = f"x{tile_index_x:03d}y{tile_index_y:03d}"
 
     return tile_index_str
 
@@ -73,9 +95,12 @@ def get_tile_index_tuple_from_filename(file_path: str) -> tuple[int, int]:
     tuple[int, int]
         Found tile index (x,y).
     """
-    file_name = os.path.splitext(os.path.basename(file_path))[0]
+    if is_local_path(file_path):
+        file_name = os.path.splitext(os.path.basename(file_path))[0]
+    else:
+        file_name = os.path.splitext(posixpath.basename(file_path))[0]
 
-    tile_id = get_tile_index_tuple_from_str(file_name)
+    tile_id = get_tile_index_int_tuple(file_name)
 
     return tile_id
 

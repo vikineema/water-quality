@@ -23,7 +23,11 @@ from water_quality.cgls_lwq.netcdf import (
     parse_netcdf_subdatasets_uri,
     parse_netcdf_url,
 )
-from water_quality.cgls_lwq.tiles import get_africa_tiles, get_tile_index_str_from_tuple
+from water_quality.cgls_lwq.tiles import (
+    get_africa_tiles,
+    get_tile_index_str,
+    get_tile_index_str_tuple,
+)
 from water_quality.io import (
     check_directory_exists,
     check_file_exists,
@@ -66,8 +70,8 @@ def get_output_cog_url(
     day = f"{date.day:02d}"
 
     if tile_index:
-        tile_index_str = get_tile_index_str_from_tuple(tile_index)
-        tile_index_str_x, tile_index_str_y = tile_index_str.split("_")
+        tile_index_str = get_tile_index_str(tile_index)
+        tile_index_str_x, tile_index_str_y = get_tile_index_str_tuple(tile_index_str)
         parent_dir = join_urlpath(
             output_dir,
             tile_index_str_x,
@@ -76,7 +80,7 @@ def get_output_cog_url(
             month,
             day,
         )
-        file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{tile_index_str_x}{tile_index_str_y}_{subdataset_variable}.tif"
+        file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{tile_index_str}_{subdataset_variable}.tif"
     else:
         parent_dir = join_urlpath(output_dir, year, month, day)
         file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{subdataset_variable}.tif"

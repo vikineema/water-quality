@@ -9,7 +9,6 @@ import re
 from urllib.parse import urlparse
 
 import rasterio
-import rioxarray
 
 
 def parse_netcdf_url(netcdf_url: str) -> tuple[str]:
@@ -22,11 +21,11 @@ def parse_netcdf_url(netcdf_url: str) -> tuple[str]:
     # File naming convention in
     # c_gls_<Acronym>_<YYYYMMDDHHmm>_<AREA>_<SENSOR>_<Version>.<EXTENSION>
     filename_prefix = "c_gls"
-    acronym, date, area, sensor, version = (
+    acronym, date_str, area, sensor, version = (
         filename.removeprefix(filename_prefix + "_").removesuffix(extension).split("_")
     )
     extension = extension.removeprefix(".")
-    return filename_prefix, acronym, date, area, sensor, version, extension
+    return filename_prefix, acronym, date_str, area, sensor, version, extension
 
 
 def parse_netcdf_subdatasets_uri(netcdf_uri: str) -> tuple[str]:
