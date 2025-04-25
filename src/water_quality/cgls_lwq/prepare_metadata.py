@@ -25,14 +25,23 @@ def prepare_dataset(
     product_yaml: str,
     output_path: str,
 ) -> DatasetDoc:
-    """
-    Prepare an eo3 metadata file for a data product.
-    @param tile_id: Unique tile ID for a single dataset to prepare.
-    @param dataset_path: Directory of the datasets
-    @param product_yaml: Path to the product definition yaml file.
-    @param output_path: Path to write the output eo3 metadata file.
+    """Prepare an eo3 metadata file for a data product.
 
-    :return: DatasetDoc
+    Parameters
+    ----------
+    tile_id : str
+        Unique tile ID for a single dataset to prepare.
+    dataset_path : str
+        Directory of the datasets
+    product_yaml : str
+        Path to the product definition yaml file.
+    output_path : str
+        Path to write the output eo3 metadata file.
+
+    Returns
+    -------
+    DatasetDoc
+        eo3 metadata document
     """
     ## Initialise and validate inputs
     # Creates variables (see EasiPrepare for others):

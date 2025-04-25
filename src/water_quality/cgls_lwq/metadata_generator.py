@@ -13,7 +13,7 @@ from pathlib import Path
 
 import click
 import numpy as np
-from eodatasets3.serialise import to_path  # noqa F401
+from eodatasets3.serialise import to_path
 from eodatasets3.stac import to_stac_item
 
 from water_quality.cgls_lwq.geotiff import get_dataset_tile_id, parse_dataset_tile_id
