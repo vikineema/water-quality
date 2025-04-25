@@ -5,20 +5,17 @@ Lake Water Quality 2002-2012 (raster 300 m), global, 10-daily – version 1 data
 
 import warnings
 from datetime import datetime
-from itertools import chain
 
+import rioxarray
 from eodatasets3.images import ValidDataMethod
 from eodatasets3.model import DatasetDoc
 from odc.apps.dc_tools._docs import odc_uuid
 
-from water_quality.cgls_lwq.constants import MEASUREMENTS
 from water_quality.easi_assemble import EasiPrepare
 
 
-def get_common_attrs(netcdf_url: str) -> dict:
-    import rioxarray
-
-    common_attrs = rioxarray.open_rasterio(netcdf_url).attrs
+def get_common_attrs(geotiff_url: str) -> dict:
+    common_attrs = rioxarray.open_rasterio(geotiff_url).attrs
     return common_attrs
 
 
@@ -48,12 +45,17 @@ def prepare_dataset(
     file_format = "GeoTIFF"
     extension = "tif"
 
+    # Find measurement paths
+    tile_id_regex = rf"{tile_id}_(.*?)\.{extension}$"
+    measurement_map = p.map_measurements_to_paths(tile_id_regex)
+
+    # Get attrs from one of the measurement files
+    common_attrs = get_common_attrs(list(measurement_map.values())[0])
+
     ## IDs and Labels
     # The version of the source dataset
-    p.dataset_version = version
-    # Unique dataset UUID built from the unique Product ID and unique dataset name
-    unique_name = f"{filename_prefix}_{acronym}_{date}_{area}_{sensor}_{version}"
-    p.dataset_id = odc_uuid(p.product_name, p.dataset_version, [unique_name])
+    p.dataset_version = f"v{common_attrs['product_version']}"
+    p.dataset_id = odc_uuid(p.product_name, p.dataset_version, [tile_id])
     # product_name is added by EasiPrepare().init()
     p.product_uri = f"https://explorer.digitalearth.africa/product/{p.product_name}"
 
@@ -110,17 +112,11 @@ def prepare_dataset(
     p.properties[f"{custom_prefix}:title"] = common_attrs["title"]
     p.properties[f"{custom_prefix}:trackingid"] = common_attrs["trackingID"]
 
-    # Check all the measurements of interest are defined in the product file
-    assert set(MEASUREMENTS).issubset(set(chain.from_iterable(p.get_product_measurements())))
-    # Check all the measurements of interest are in the dataset file
-    assert set(MEASUREMENTS).issubset(set(get_netcdf_subdatasets_names(p.dataset_path)))
-
     # Add measurement paths
-    for measurment in MEASUREMENTS:
+    for measurement_name, file_location in measurement_map.items():
         p.note_measurement(
-            measurement_name=measurment,
-            file_path=p.dataset_path,
-            layer=measurment,
+            measurement_name=measurement_name,
+            file_path=file_location,
             expand_valid_data=True,
             relative_to_metadata=False,
         )
