@@ -5,23 +5,24 @@ Lake Water Quality datasets.
 
 import json
 import logging
+import os
+import posixpath
 import sys
 from datetime import datetime
 from pathlib import Path
 
 import click
 import numpy as np
-import requests
 from eodatasets3.serialise import to_path  # noqa F401
 from eodatasets3.stac import to_stac_item
 
-from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS
-from water_quality.cgls_lwq.geotiff import parse_geotiff_url
-from water_quality.cgls_lwq.netcdf import parse_netcdf_url
+from water_quality.cgls_lwq.geotiff import get_dataset_tile_id, parse_dataset_tile_id
 from water_quality.cgls_lwq.prepare_metadata import prepare_dataset
+from water_quality.cgls_lwq.tiles import get_tile_index_str_tuple
 from water_quality.io import (
     check_directory_exists,
     check_file_exists,
+    find_geotiff_files,
     get_filesystem,
     is_local_path,
     join_urlpath,
@@ -29,25 +30,31 @@ from water_quality.io import (
 from water_quality.logs import logging_setup
 
 
-def get_stac_item_destination_url(output_dir: str, geotiff_url: str) -> str:
-    (
-        filename_prefix,
-        acronym,
-        date_str,
-        area,
-        sensor,
-        version,
-        tile_index_str,
-        subdataset_variable,
-        _,
-    ) = parse_geotiff_url(geotiff_url)
+def get_stac_item_destination_url(output_dir: str, dataset_tile_id: str) -> str:
+    """
+    Construct the file path for the dataset STAC document.
+
+    Parameters
+    ----------
+    output_dir : str
+        Directory to write the STAC document to.
+    dataset_tile_id : str
+        Unique tile ID for a single dataset.
+
+    Returns
+    -------
+    str
+        File path to write the dataset STAC document to.
+    """
+    _, _, date_str, _, _, _, tile_index_str = parse_dataset_tile_id(dataset_tile_id)
 
     date = datetime.strptime(date_str, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
     day = f"{date.day:02d}"
 
-    file_name = f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}_{tile_index_str}_{subdataset_variable}.stac-item.json"
+    file_name = f"{dataset_tile_id}.stac-item.json"
+    tile_index_str_x, tile_index_str_y = get_tile_index_str_tuple(tile_index_str)
 
     parent_dir = join_urlpath(
         output_dir,
@@ -57,6 +64,7 @@ def get_stac_item_destination_url(output_dir: str, geotiff_url: str) -> str:
         month,
         day,
     )
+
     if not check_directory_exists(parent_dir):
         fs = get_filesystem(parent_dir, anon=False)
         fs.makedirs(parent_dir, exist_ok=True)
@@ -66,17 +74,43 @@ def get_stac_item_destination_url(output_dir: str, geotiff_url: str) -> str:
 
 
 def get_eo3_dataset_doc_file_path(
-    output_dir: str, netcdf_url: str, write_eo3_dataset_doc: bool
+    output_dir: str, dataset_tile_id: str, write_eo3_dataset_doc: bool
 ) -> str:
-    filename_prefix, acronym, date_str, area, sensor, version, _ = parse_netcdf_url(netcdf_url)
+    """Construct the file path for the dataset's eo3 metadata document.
+
+    Parameters
+    ----------
+    output_dir : str
+        Directory to write the eo3 metadata document to.
+    dataset_tile_id : str
+        Unique tile ID for a single dataset.
+    write_eo3_dataset_doc : bool
+        If True create the parent directory for the document.
+
+    Returns
+    -------
+    str
+        File path for the dataset's eo3 metadata document.
+    """
+    _, _, date_str, _, _, _, tile_index_str = parse_dataset_tile_id(dataset_tile_id)
+
     date = datetime.strptime(date_str, "%Y%m%d%H%M%S")
     year = str(date.year)
     month = f"{date.month:02d}"
-    file_name = (
-        f"{filename_prefix}_{acronym}_{date_str}_{area}_{sensor}_{version}.odc-metadata.yaml"
+    day = f"{date.day:02d}"
+
+    file_name = f"{dataset_tile_id}.odc-metadata.yaml"
+    tile_index_str_x, tile_index_str_y = get_tile_index_str_tuple(tile_index_str)
+
+    parent_dir = join_urlpath(
+        output_dir,
+        tile_index_str_x,
+        tile_index_str_y,
+        year,
+        month,
+        day,
     )
 
-    parent_dir = join_urlpath(output_dir, year, month)
     if write_eo3_dataset_doc:
         if not check_directory_exists(parent_dir):
             fs = get_filesystem(parent_dir, anon=False)
@@ -93,9 +127,9 @@ def get_eo3_dataset_doc_file_path(
     no_args_is_help=True,
 )
 @click.option(
-    "--product-name",
-    type=click.Choice(list(MANIFEST_FILE_URLS.keys()), case_sensitive=True),
-    help="Name of the product to generate the stac item files for",
+    "--cogs-dir",
+    type=str,
+    help="Directory containing the datasets to generate metadata for",
 )
 @click.option(
     "--product-yaml", type=str, help="File path or URL to the product definition yaml file"
@@ -128,7 +162,7 @@ def get_eo3_dataset_doc_file_path(
 )
 @click.option("-v", "--verbose", default=1, count=True)
 def create_stac_files(
-    product_name: str,
+    cogs_dir: str,
     product_yaml: str,
     stac_output_dir: str,
     overwrite: bool,
@@ -141,18 +175,19 @@ def create_stac_files(
     logging_setup(verbose)
     log = logging.getLogger(__name__)
 
-    if product_name not in MANIFEST_FILE_URLS.keys():
-        raise NotImplementedError(
-            f"Manifest file url not configured for the product {product_name}"
-        )
-
-    # Read urls available the prooduct
-    r = requests.get(MANIFEST_FILE_URLS[product_name])
-    netcdf_urls = r.text.splitlines()
-    log.info(f"Found {len(netcdf_urls)} netcdf urls in the manifest file")
+    # Find all the geotiffs
+    # Files have the structure
+    # s3://<bucket>/<product_name>/<x>/<y>/<year>/<month>/c_gls_<Acronym>_<YYYYMMDDHHmm>_<AREA>_<SENSOR>_<Version>_<x><y>_<subdataset_variable>.tif
+    all_geotiffs = find_geotiff_files(cogs_dir)
+    if is_local_path(cogs_dir):
+        all_dataset_paths = list(set(os.path.dirname(i) for i in all_geotiffs))
+    else:
+        all_dataset_paths = list(set(posixpath.dirname(i) for i in all_geotiffs))
+    all_dataset_paths.sort()
+    log.info(f"Found {len(all_dataset_paths)} datasets")
 
     # Split files equally among the workers
-    task_chunks = np.array_split(np.array(netcdf_urls), max_parallel_steps)
+    task_chunks = np.array_split(np.array(all_dataset_paths), max_parallel_steps)
     task_chunks = [chunk.tolist() for chunk in task_chunks]
     task_chunks = list(filter(None, task_chunks))
 
@@ -165,17 +200,21 @@ def create_stac_files(
 
     dataset_paths = task_chunks[worker_idx]
 
-    log.info(f"Generating stac files for the product {product_name}")
-
-    # Write the eo3 dataset document to disk
+    log.info(f"Generating stac files for {len(all_dataset_paths)} datasets")
 
     for idx, dataset_path in enumerate(dataset_paths):
         log.info(f"Generating stac file for {dataset_path} {idx + 1}/{len(dataset_paths)}")
 
+        # Get the measurement geotiffs that belong to the dataset.
+        measurement_files = list(filter(lambda x: dataset_path in x, all_geotiffs))
+        measurement_files.sort()
+
+        dataset_tile_id = get_dataset_tile_id(measurement_files[0])
+
         if is_local_path(dataset_path):
             dataset_path = Path(dataset_path).resolve()
 
-        stac_item_destination_url = get_stac_item_destination_url(stac_output_dir, dataset_path)
+        stac_item_destination_url = get_stac_item_destination_url(stac_output_dir, dataset_tile_id)
         if not overwrite:
             if check_file_exists(stac_item_destination_url):
                 log.info(
@@ -185,10 +224,12 @@ def create_stac_files(
 
         # Dataset docs
         dataset_doc_output_path = get_eo3_dataset_doc_file_path(
-            stac_output_dir, dataset_path, write_eo3
+            stac_output_dir, dataset_tile_id, write_eo3
         )
 
-        dataset_doc = prepare_dataset(dataset_path, product_yaml, dataset_doc_output_path)
+        dataset_doc = prepare_dataset(
+            dataset_tile_id, dataset_path, product_yaml, dataset_doc_output_path
+        )
 
         if write_eo3:
             to_path(Path(dataset_doc_output_path), dataset_doc)

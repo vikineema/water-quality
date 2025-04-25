@@ -12,7 +12,6 @@ from eodatasets3.model import DatasetDoc
 from odc.apps.dc_tools._docs import odc_uuid
 
 from water_quality.cgls_lwq.constants import MEASUREMENTS
-from water_quality.cgls_lwq.netcdf import get_netcdf_subdatasets_names, parse_netcdf_url
 from water_quality.easi_assemble import EasiPrepare
 
 
@@ -24,15 +23,17 @@ def get_common_attrs(netcdf_url: str) -> dict:
 
 
 def prepare_dataset(
+    tile_id: str,
     dataset_path: str,
     product_yaml: str,
     output_path: str,
 ) -> DatasetDoc:
     """
     Prepare an eo3 metadata file for a data product.
-    @param dataset_path: Path to the geotiff to create dataset metadata for.
+    @param tile_id: Unique tile ID for a single dataset to prepare.
+    @param dataset_path: Directory of the datasets
     @param product_yaml: Path to the product definition yaml file.
-    @param output_path: Path to write the output metadata file.
+    @param output_path: Path to write the output eo3 metadata file.
 
     :return: DatasetDoc
     """
@@ -42,15 +43,10 @@ def prepare_dataset(
     # - p.product_name
     p = EasiPrepare(dataset_path, product_yaml, output_path)
 
-    # Get information required from the dataset
-    filename_prefix, acronym, date, area, sensor, version, extension = parse_netcdf_url(
-        p.dataset_path
-    )
-    common_attrs = get_common_attrs(p.dataset_path)
-
-    ## File format of preprocessed data
-    if extension in ["nc"]:
-        file_format = "NetCDF"
+    ## File format of data
+    # e.g. cloud-optimised GeoTiff (= GeoTiff)
+    file_format = "GeoTIFF"
+    extension = "tif"
 
     ## IDs and Labels
     # The version of the source dataset

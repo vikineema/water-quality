@@ -20,3 +20,4 @@ MEASUREMENTS = [
     "turbidity_mean",
     "turbidity_sigma",
 ]
+NAMING_PREFIX = "c_gls"
