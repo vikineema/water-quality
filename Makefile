@@ -68,19 +68,9 @@ setup-explorer: ## Setup the datacube explorer
 explorer-refresh-products:
 	docker compose exec -T explorer cubedash-gen --init --all
 
-# index-wofs-all-time-summary
-index-wofs_ls_summary_alltime:
-	@echo "$$(date) Start with wofs_ls_summary_alltime"
-	docker compose exec -T jupyter stac-to-dc \
-		--catalog-href=https://explorer.digitalearth.africa/stac/ \
-		--collections=wofs_ls_summary_alltime 
-	@echo "$$(date) Done with wofs_ls_summary_alltime"
-
-
-# Generate stac files
-create-stac-files:
+create-stac-files: ## Create per dataset metadata for a LWQ product
 	mprof run cgls-lwq  create-stac-files \
-	--product-name=cgls_lwq300_2002_2012 \
+	--cogs-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
 	--product-yaml=products/cgls_lwq300_2002_2012.odc-product.yaml \
 	--stac-output-dir=data/cgls_lwq300_2002_2012 \
 	--no-overwrite \
@@ -90,12 +80,9 @@ create-stac-files:
 download-cog-files:
 	mprof run cgls-lwq  download-cogs \
 	--product-name=cgls_lwq300_2002_2012 \
-	--cog-output-dir=data/cgls_lwq300_2002_2012/new_tiling \
+	--cog-output-dir=data/cgls_lwq300_2002_2012/ \
 	--no-overwrite \
 	-vvv
 
-upload-to-s3:
-	find data/cgls_lwq300_2002_2012/*/*/2011/01 -type f | while read -r file; do \
-		relpath=$$(echo "$$file" | sed 's|^data/||'); \
-		aws s3 cp --dry-run "$$file" "s3://$(S3_BUCKET)/$$relpath"; \
-	done	
+download-from-s3:
+	aws s3 cp s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ data/cgls_lwq300_2002_2012  --recursive # --dryrun
