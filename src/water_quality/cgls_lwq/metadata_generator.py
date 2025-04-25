@@ -224,7 +224,7 @@ def create_stac_files(
 
         # Dataset docs
         dataset_doc_output_path = get_eo3_dataset_doc_file_path(
-            stac_output_dir, dataset_tile_id, write_eo3
+            "tmp", dataset_tile_id, write_eo3
         )
 
         dataset_doc = prepare_dataset(
