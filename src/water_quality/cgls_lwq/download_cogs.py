@@ -196,7 +196,14 @@ def download_cogs(
 
                 # Get attributes to be used in tiled COGs
                 attrs = da.attrs
-                exclude = ["lon#", "lat#", "number_of_regions", "TileSize", "NETCDF", "coordinates"]
+                exclude = [
+                    "lon#",
+                    "lat#",
+                    "number_of_regions",
+                    "TileSize",
+                    "NETCDF_",
+                    "coordinates",
+                ]
                 filtered_attrs = {
                     k: v
                     for k, v in attrs.items()
