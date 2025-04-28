@@ -150,6 +150,11 @@ def download_cogs(
             f"Manifest file url not configured for the product {product_name}"
         )
 
+    if product_name not in MEASUREMENTS.keys():
+        raise NotImplementedError(
+            f"Required measurements not configured for the product {product_name}"
+        )
+
     # Read urls available for the product
     r = requests.get(MANIFEST_FILE_URLS[product_name])
     netcdf_urls = [i.strip() for i in r.text.splitlines()]
@@ -202,10 +207,10 @@ def download_cogs(
             netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netcdf_url)
             # Filter by required measurements
             netcdf_subdatasets_uris = {
-                k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS
+                k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS[product_name]
             }
             # Check
-            assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS)
+            assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS[product_name])
 
             for var, subdataset_uri in netcdf_subdatasets_uris.items():
                 da = rioxarray.open_rasterio(subdataset_uri).squeeze()

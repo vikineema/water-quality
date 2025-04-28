@@ -13,15 +13,16 @@ MANIFEST_FILE_URLS = {
     "cgls_lwq300_2024_nrt": "https://globalland.vito.be/download/manifest/lwq_300m_v2_10daily-nrt_netcdf/manifest_clms_global_lwq_300m_v2_10daily-nrt_netcdf_latest.txt",
     "cgls_lwq100_2024_nrt": "https://globalland.vito.be/download/manifest/lwq_100m_v2_10daily-nrt_netcdf/manifest_clms_global_lwq_100m_v2_10daily-nrt_netcdf_latest.txt",
 }
-MEASUREMENTS = [
-    "num_obs",
+MEASUREMENTS_1 = [
     "first_obs",
-    "trophic_state_index",
     "last_obs",
     "n_obs_quality_risk_sum",
+    "num_obs",
     "stats_valid_obs_tsi_sum",
     "stats_valid_obs_turbidity_sum",
+    "trophic_state_index",
     "turbidity_mean",
     "turbidity_sigma",
 ]
+MEASUREMENTS = {"cgls_lwq300_2002_2012": MEASUREMENTS_1, "cgls_lwq300_2016_2024": MEASUREMENTS_1}
 NAMING_PREFIX = "c_gls"
