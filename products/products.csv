@@ -1,2 +1,6 @@
 product,definition
 cgls_lwq300_2002_2012,products/cgls_lwq300_2002_2012.odc-product.yaml
+cgls_lwq300_2016_2024,products/cgls_lwq300_2016_2024.odc-product.yaml
+cgls_lwq100_2019_2024,products/cgls_lwq100_2019_2024.odc-product.yaml
+cgls_lwq100_2024_nrt,products/cgls_lwq100_2024_nrt.odc-product.yaml
+cgls_lwq300_2024_nrt,products/cgls_lwq300_2024_nrt.odc-product.yaml

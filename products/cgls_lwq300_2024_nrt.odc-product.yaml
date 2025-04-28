@@ -21,11 +21,11 @@ measurements:
     nodata: 0
     units: "1"
   - name: first_obs
-    dtype: int32
+    dtype: float32
     nodata: 9.96921e+36
     units: "1"
   - name: last_obs
-    dtype: int32
+    dtype: float32
     nodata: 9.96921e+36
     units: "1"
   - name: turbidity_mean
