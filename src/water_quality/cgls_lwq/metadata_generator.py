@@ -201,45 +201,70 @@ def create_stac_files(
     dataset_paths = task_chunks[worker_idx]
 
     log.info(f"Generating stac files for {len(all_dataset_paths)} datasets")
-
+    failed_tasks = []
     for idx, dataset_path in enumerate(dataset_paths):
-        log.info(f"Generating stac file for {dataset_path} {idx + 1}/{len(dataset_paths)}")
+        try:
+            log.info(f"Generating stac file for {dataset_path} {idx + 1}/{len(dataset_paths)}")
 
-        # Get the measurement geotiffs that belong to the dataset.
-        measurement_files = list(filter(lambda x: dataset_path in x, all_geotiffs))
-        measurement_files.sort()
+            # Get the measurement geotiffs that belong to the dataset.
+            measurement_files = list(filter(lambda x: dataset_path in x, all_geotiffs))
+            measurement_files.sort()
 
-        dataset_tile_id = get_dataset_tile_id(measurement_files[0])
+            dataset_tile_id = get_dataset_tile_id(measurement_files[0])
 
-        if is_local_path(dataset_path):
-            dataset_path = Path(dataset_path).resolve()
+            if is_local_path(dataset_path):
+                dataset_path = Path(dataset_path).resolve()
 
-        stac_item_destination_url = get_stac_item_destination_url(stac_output_dir, dataset_tile_id)
-        if not overwrite:
-            if check_file_exists(stac_item_destination_url):
-                log.info(
-                    f"{stac_item_destination_url} exists! Skipping stac file generation for {dataset_path}"
-                )
-                continue
+            stac_item_destination_url = get_stac_item_destination_url(
+                stac_output_dir, dataset_tile_id
+            )
+            if not overwrite:
+                if check_file_exists(stac_item_destination_url):
+                    log.info(
+                        f"{stac_item_destination_url} exists! Skipping stac file generation for {dataset_path}"
+                    )
+                    continue
 
-        # Dataset docs
-        dataset_doc_output_path = get_eo3_dataset_doc_file_path(
-            "tmp", dataset_tile_id, write_eo3
-        )
+            # Dataset docs
+            dataset_doc_output_path = get_eo3_dataset_doc_file_path(
+                "tmp", dataset_tile_id, write_eo3
+            )
 
-        dataset_doc = prepare_dataset(
-            dataset_tile_id, dataset_path, product_yaml, dataset_doc_output_path
-        )
+            dataset_doc = prepare_dataset(
+                dataset_tile_id, dataset_path, product_yaml, dataset_doc_output_path
+            )
 
-        if write_eo3:
-            to_path(Path(dataset_doc_output_path), dataset_doc)
+            if write_eo3:
+                to_path(Path(dataset_doc_output_path), dataset_doc)
 
-        # Convert dataset doc to stac item
-        stac_item = to_stac_item(
-            dataset=dataset_doc, stac_item_destination_url=str(stac_item_destination_url)
-        )
+            # Convert dataset doc to stac item
+            stac_item = to_stac_item(
+                dataset=dataset_doc, stac_item_destination_url=str(stac_item_destination_url)
+            )
 
-        # Write stac file to disk.
-        fs = get_filesystem(str(stac_item_destination_url), anon=False)
-        with fs.open(str(stac_item_destination_url), "w") as f:
-            json.dump(stac_item, f, indent=2)  # `indent=4` makes it human-readable
+            # Write stac file to disk.
+            fs = get_filesystem(str(stac_item_destination_url), anon=False)
+            with fs.open(str(stac_item_destination_url), "w") as f:
+                json.dump(stac_item, f, indent=2)  # `indent=4` makes it human-readable
+        except Exception as error:
+            log.exception(error)
+            log.error(f"Failed to generate metedata file for dataset {dataset_path}")
+            failed_tasks.append(dataset_path)
+
+    if failed_tasks:
+        failed_tasks_json_array = json.dumps(failed_tasks)
+
+        tasks_directory = "/tmp/"
+        failed_tasks_output_file = join_urlpath(tasks_directory, "failed_tasks")
+
+        fs = get_filesystem(path=tasks_directory, anon=False)
+
+        if not check_directory_exists(path=tasks_directory):
+            fs.mkdirs(path=tasks_directory, exist_ok=True)
+            log.info(f"Created directory {tasks_directory}")
+
+        with fs.open(failed_tasks_output_file, "a") as file:
+            file.write(failed_tasks_json_array + "\n")
+        log.info(f"Failed tasks written to {failed_tasks_output_file}")
+
+        raise RuntimeError(f"{len(failed_tasks)} tasks failed")
