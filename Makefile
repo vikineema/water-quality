@@ -37,7 +37,7 @@ lint-src:
 	ruff format --verbose src/
 
 add-products:
-	docker compose exec -T jupyter dc-sync-products products/products.csv
+	docker compose exec -T jupyter dc-sync-products products/products.csv --update-if-exists
 
 ## Jupyter service
 start-jupyter: ## To be used in micromamba-shell
@@ -68,7 +68,15 @@ setup-explorer: ## Setup the datacube explorer
 explorer-refresh-products:
 	docker compose exec -T explorer cubedash-gen --init --all
 
-create-stac-files: ## Create per dataset metadata for a LWQ product
+## cgls_lwq300_2002_2012
+download-cog-files-cgls_lwq300_2002_2012:
+	mprof run cgls-lwq  download-cogs \
+	--product-name=cgls_lwq300_2002_2012 \
+	--cog-output-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
+	--no-overwrite \
+	-vvv
+
+create-stac-files-cgls_lwq300_2002_2012: ## Create per dataset metadata for a LWQ product
 	mprof run cgls-lwq  create-stac-files \
 	--cogs-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
 	--product-yaml=products/cgls_lwq300_2002_2012.odc-product.yaml \
@@ -77,12 +85,18 @@ create-stac-files: ## Create per dataset metadata for a LWQ product
 	--no-write-eo3 \
 	-vvv
 
+index-stac-gls_cgls_lwq300_2002_2012:
+	docker compose exec -T jupyter s3-to-dc-v2 \
+	--stac --no-sign-request \
+	s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/**/*.json \
+	cgls_lwq300_2002_2012
+
+
+## cgls_lwq300_2016_2024
 download-cog-files:
 	mprof run cgls-lwq  download-cogs \
-	--product-name=cgls_lwq300_2002_2012 \
-	--cog-output-dir=data/cgls_lwq300_2002_2012/ \
+	--product-name=cgls_lwq300_2016_2024 \
+	--cog-output-dir=data/cgls_lwq300_2016_2024/ \
+	--url-filter="201605"
 	--no-overwrite \
 	-vvv
-
-download-from-s3:
-	aws s3 cp s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ data/cgls_lwq300_2002_2012  --recursive # --dryrun
