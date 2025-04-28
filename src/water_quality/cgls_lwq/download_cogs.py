@@ -128,7 +128,7 @@ def get_output_cog_url(
     "--url-filter",
     default=None,
     show_default=True,
-    type=int,
+    type=str,
     help="Filter to select netcdf urls to download cogs for.",
 )
 @click.option("-v", "--verbose", default=1, count=True)
