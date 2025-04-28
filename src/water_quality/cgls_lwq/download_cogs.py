@@ -124,6 +124,13 @@ def get_output_cog_url(
     type=int,
     help="Sequential index which will be used to define the range of geotiffs the pod will work with.",
 )
+@click.option(
+    "--url-filter",
+    default=None,
+    show_default=True,
+    type=int,
+    help="Filter to select netcdf urls to download cogs for.",
+)
 @click.option("-v", "--verbose", default=1, count=True)
 def download_cogs(
     product_name: str,
@@ -132,6 +139,7 @@ def download_cogs(
     max_parallel_steps: int,
     worker_idx: int,
     verbose: int,
+    url_filter: str,
 ):
     # Setup logging level
     logging_setup(verbose)
@@ -147,10 +155,19 @@ def download_cogs(
     netcdf_urls = [i.strip() for i in r.text.splitlines()]
     netcdf_urls.sort()
 
-    # TODO: Remove filter by year
-    # filter to 2011 only
-    netcdf_urls = [i for i in netcdf_urls if "201101" in i]
     log.info(f"Found {len(netcdf_urls)} netcdf urls in the manifest file")
+
+    # Apply filter
+    if url_filter:
+        netcdf_urls = [i for i in netcdf_urls if url_filter in i]
+        if len(netcdf_urls) < 1:
+            raise ValueError(
+                f"No netcdf urls found in manifest file that match the filter '{url_filter}'"
+            )
+        else:
+            log.info(
+                f"Found {len(netcdf_urls)} netcdf urls in the manifest file that match the filter '{url_filter}'"
+            )
 
     # Split files equally among the workers
     task_chunks = np.array_split(np.array(netcdf_urls), max_parallel_steps)
