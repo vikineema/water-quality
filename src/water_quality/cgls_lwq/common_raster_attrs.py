@@ -45,6 +45,11 @@ def get_common_raster_attrs(
             f"Manifest file url not configured for the product {product_name}"
         )
 
+    if product_name not in MEASUREMENTS.keys():
+        raise NotImplementedError(
+            f"Required measurements not configured for the product {product_name}"
+        )
+
     if is_local_path(str(output_dir)):
         output_dir = os.path.abspath(output_dir)
 
@@ -66,8 +71,11 @@ def get_common_raster_attrs(
         netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netdf_url)
         # Filter by required measurements
         netcdf_subdatasets_uris = {
-            k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS
+            k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS[product_name]
         }
+        # Check
+        assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS[product_name])
+
         measurement_attrs = {}
         for var, subdatasets_uri in netcdf_subdatasets_uris:
             # Load the netcdf url
