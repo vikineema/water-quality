@@ -93,22 +93,22 @@ index-stac-gls_cgls_lwq300_2002_2012:
 
 
 ## cgls_lwq300_2016_2024
-download-cog-files-cgls_lwq300_2016_2024:\
+download-cog-files-cgls_lwq300_2016_2024:
 	docker compose exec -T jupyter \
-	mprof run cgls-lwq  download-cogs \
-	--product-name=cgls_lwq300_2016_2024 \
-	--cog-output-dir=data/cgls_lwq300_2016_2024/ \
-	--url-filter="201605"
-	--no-overwrite \
-	-vvv
+		mprof run cgls-lwq  download-cogs \
+		--product-name=cgls_lwq300_2016_2024 \
+		--cog-output-dir=data/cgls_lwq300_2016_2024/ \
+		--url-filter="201605" \
+		--no-overwrite \
+		-vvv
 
 
 ## cgls_lwq100_2019_2024
 download-cog-files:
 	docker compose exec -T jupyter \
-	mprof run cgls-lwq  download-cogs \
-	--product-name=cgls_lwq100_2019_2024 \
-	--cog-output-dir=data/cgls_lwq100_2019_2024/ \
-	--url-filter="201901"
-	--no-overwrite \
-	-vvv
+		mprof run cgls-lwq  download-cogs \
+		--product-name=cgls_lwq100_2019_2024 \
+		--cog-output-dir=data/cgls_lwq100_2019_2024/ \
+		--url-filter="201901" \
+		--no-overwrite \
+		-vvv
