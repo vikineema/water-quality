@@ -1,8 +1,8 @@
 ---
 name: cgls_lwq300_2024_nrt
 description: >
-  Copernicus Global Land Service – Lake Water Quality 2024 - present (raster 300 m),
-  global, 10-daily – version 2
+  Copernicus Global Land Service – Lake Water Quality 2024 - present
+  (raster 300 m), global, 10-daily – version 2
 metadata_type: eo3
 
 metadata:
@@ -41,7 +41,7 @@ measurements:
     nodata: 0
     units: "1"
   - name: quality_flags
-    dtype: int
+    dtype: int32
     nodata: 65535
     units: "1"
   - name: trophic_state_index
