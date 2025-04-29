@@ -85,7 +85,7 @@ create-stac-files-cgls_lwq300_2002_2012: ## Create per dataset metadata for a LW
 	--no-write-eo3 \
 	-vvv
 
-index-stac-gls_cgls_lwq300_2002_2012:
+index-stac-cgls_lwq300_2002_2012:
 	docker compose exec -T jupyter s3-to-dc-v2 \
 	--stac --no-sign-request --update-if-exists --allow-unsafe \
 	s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/**/*.json \
@@ -115,6 +115,13 @@ create-stac-files-cgls_lwq300_2016_2024: ## Create per dataset metadata for a LW
 	--no-overwrite \
 	--no-write-eo3 \
 	-vvv
+
+index-stac-cgls_lwq300_2016_2024:
+	docker compose exec -T jupyter s3-to-dc-v2 \
+	--stac --no-sign-request --update-if-exists --allow-unsafe \
+	s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/**/*.json \
+	cgls_lwq300_2016_2024
+
 
 ## cgls_lwq100_2019_2024
 download-cog-files:
