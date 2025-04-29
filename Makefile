@@ -102,6 +102,19 @@ download-cog-files-cgls_lwq300_2016_2024:
 		--no-overwrite \
 		-vvv
 
+copy-cogs-to-s3-cgls_lwq300_2016_2024:
+	aws s3 cp --recursive --no-sign-request \
+	data/cgls_lwq300_2016_2024/ \
+	s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/ 
+
+create-stac-files-cgls_lwq300_2016_2024: ## Create per dataset metadata for a LWQ product
+	mprof run cgls-lwq  create-stac-files \
+	--cogs-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/ \
+	--product-yaml=products/cgls_lwq300_2016_2024.odc-product.yaml \
+	--stac-output-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/ \
+	--no-overwrite \
+	--no-write-eo3 \
+	-vvv
 
 ## cgls_lwq100_2019_2024
 download-cog-files:
