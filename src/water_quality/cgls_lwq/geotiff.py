@@ -93,7 +93,8 @@ def parse_dataset_tile_id(dataset_tile_id: str) -> tuple[str]:
     Returns
     -------
     tuple[str]
-        Components of the dataset tile id.
+        Components of the dataset tile id:
+        NAMING_PREFIX, acronym, date_str, area, sensor, version, tile_index_str
     """
     parts = dataset_tile_id.removeprefix(NAMING_PREFIX).split("_")
     parts = list(filter(None, parts))

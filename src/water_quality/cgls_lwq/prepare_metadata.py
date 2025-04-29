@@ -11,6 +11,7 @@ from eodatasets3.images import ValidDataMethod
 from eodatasets3.model import DatasetDoc
 from odc.apps.dc_tools._docs import odc_uuid
 
+from water_quality.cgls_lwq.geotiff import parse_dataset_tile_id
 from water_quality.easi_assemble import EasiPrepare
 
 
@@ -106,6 +107,12 @@ def prepare_dataset(
     # Helpful but not critical
     p.properties["odc:file_format"] = file_format
     p.properties["odc:product"] = p.product_name
+
+    ## Scene metrics, as available
+
+    # The "region" of acquisition, if applicable
+    _, _, _, _, _, _, tile_index_str = parse_dataset_tile_id(tile_id)
+    p.region_code = tile_index_str
 
     ## Ignore warnings, OPTIONAL
     # Ignore unknown property warnings (generated in eodatasets3.properties.Eo3Dict().normalise_and_set())
