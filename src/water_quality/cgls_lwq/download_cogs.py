@@ -214,7 +214,23 @@ def download_cogs(
 
             for var, subdataset_uri in netcdf_subdatasets_uris.items():
                 da = rioxarray.open_rasterio(subdataset_uri).squeeze()
-                da = assign_crs(da, da.rio.crs, crs_coord_name="crs")
+
+                if "spatial_ref" in list(da.coords):
+                    crs_coord_name = "spatial_ref"
+                elif "crs" in list(da.coords):
+                    crs_coord_name = "crs"
+
+                crs = da.rio.crs
+
+                if crs is None:
+                    # Assumption drawn from product manual is
+                    # data is either in EPSG:4326 or OGC:CRS84
+                    if da.dims[0] in ["y", "lat", "latitude"]:
+                        crs = "EPSG:4326"
+                    elif da.dims[0] in ["x", "lon", "longitude"]:
+                        crs = "OGC:CRS84"
+
+                da = assign_crs(da, crs, crs_coord_name=crs_coord_name)
 
                 # Get attributes to be used in tiled COGs
                 attrs = da.attrs
