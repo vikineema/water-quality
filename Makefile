@@ -125,10 +125,32 @@ index-stac-cgls_lwq300_2016_2024:
 
 ## cgls_lwq100_2019_2024
 download-cog-files-cgls_lwq100_2019_2024:
-	docker compose exec -T jupyter \
-		mprof run cgls-lwq  download-cogs \
-		--product-name=cgls_lwq100_2019_2024 \
-		--cog-output-dir=data/cgls_lwq100_2019_2024/ \
-		--url-filter="202403" \
-		--no-overwrite \
-		-vvv
+	## docker compose exec -T jupyter \
+	mprof run cgls-lwq  download-cogs \
+	--product-name=cgls_lwq100_2019_2024 \
+	--cog-output-dir=data/cgls_lwq100_2019_2024/ \
+	--url-filter="202403" \
+	--no-overwrite \
+	-vvv
+
+
+## cgls_lwq300_2024_nrt
+download-cog-files-cgls_lwq300_2024_nrt:
+	## docker compose exec -T jupyter \
+	mprof run cgls-lwq  download-cogs \
+	--product-name=cgls_lwq300_2024_nrt \
+	--cog-output-dir=data/cgls_lwq300_2024_nrt/ \
+	--url-filter="202503" \
+	--no-overwrite \
+	-vvv
+
+
+## cgls_lwq100_2024_nrt
+download-cog-files-cgls_lwq100_2024_nrt:
+	## docker compose exec -T jupyter \
+	mprof run cgls-lwq  download-cogs \
+	--product-name=cgls_lwq100_2024_nrt \
+	--cog-output-dir=data/cgls_lwq100_2024_nrt/ \
+	--url-filter="202503" \
+	--no-overwrite \
+	-vvv
