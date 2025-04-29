@@ -87,7 +87,7 @@ create-stac-files-cgls_lwq300_2002_2012: ## Create per dataset metadata for a LW
 
 index-stac-gls_cgls_lwq300_2002_2012:
 	docker compose exec -T jupyter s3-to-dc-v2 \
-	--stac --no-sign-request \
+	--stac --no-sign-request --update-if-exists --allow-unsafe \
 	s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/**/*.json \
 	cgls_lwq300_2002_2012
 
