@@ -16,11 +16,19 @@ load:
     latitude: -0.0022
 
 measurements:
-  - name: num_obs
-    dtype: int32
-    nodata: 0
-    units: "1"
+  - name: chla_mean
+    dtype: float32
+    nodata: 9.96921e+36
+    units: "mg/m³"
+  - name: chla_uncertainty
+    dtype: float32
+    nodata: 9.96921e+36
+    units: "%"
   - name: first_obs
+    dtype: float32
+    nodata: 9.96921e+36
+    units: "1"
+  - name: floating_cyanobacteria
     dtype: float32
     nodata: 9.96921e+36
     units: "1"
@@ -28,27 +36,30 @@ measurements:
     dtype: float32
     nodata: 9.96921e+36
     units: "1"
-  - name: turbidity_mean
-    dtype: float32
-    nodata: 9.96921e+36
-    units: "NTU"
-  - name: turbidity_sigma
-    dtype: float32
-    nodata: 9.96921e+36
-    units: "NTU"
+  - name: num_obs
+    dtype: int32
+    nodata: 0
+    units: "1"
+  - name: quality_flags
+    dtype: int
+    nodata: 65535
+    units: "1"
   - name: trophic_state_index
     dtype: float32
     nodata: 9.96921e+36
     units: "1"
-  - name: n_obs_quality_risk_sum
+    aliases: [TSI]
+  - name: tsm_mean
     dtype: float32
     nodata: 9.96921e+36
-    units: "1"
-  - name: stats_valid_obs_tsi_sum
+    units: "g/m³"
+    aliases: [TSM]
+  - name: tsm_uncertainty
     dtype: float32
     nodata: 9.96921e+36
-    units: "1"
-  - name: stats_valid_obs_turbidity_sum
+    units: "%"
+  - name: turbidity_mean
     dtype: float32
     nodata: 9.96921e+36
-    units: "1"
+    units: "NTU"
+    aliases: [turbidity]
