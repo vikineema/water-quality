@@ -8,9 +8,11 @@ import posixpath
 import re
 
 import rasterio
+from osgeo import gdal
+from rasterio.errors import RasterioIOError
 
 from water_quality.cgls_lwq.constants import NAMING_PREFIX
-from water_quality.io import is_local_path
+from water_quality.io import get_gdal_vsi_prefix, is_local_path
 
 
 def parse_netcdf_url(netcdf_url: str) -> tuple[str]:
@@ -112,9 +114,15 @@ def get_netcdf_subdatasets_uris(netcdf_url: str) -> dict[str, str]:
     dict[str, str]
         Mapping of name to URI for all subdatasets in the CGLS Lake Water Quality netcdf file
     """
-    with rasterio.open(netcdf_url, "r") as src:
-        subdatasets = src.subdatasets
+    try:
+        with rasterio.open(netcdf_url, "r") as src:
+            subdatasets = src.subdatasets
+    except RasterioIOError:
+        subdatasets = gdal.Open(get_gdal_vsi_prefix(netcdf_url)).GetSubDatasets()
+        subdatasets = [i[0] for i in subdatasets]
+
     netcdf_subdatasets_uris = {get_netcdf_subdataset_variable(i): i for i in subdatasets}
+
     return netcdf_subdatasets_uris
 
 
