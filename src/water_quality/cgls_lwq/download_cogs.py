@@ -191,6 +191,7 @@ def download_cogs(
     netcdf_urls = task_chunks[worker_idx]
 
     # Download netcdf files to disk
+    log.info("Downloading netcdf files to disk")
     tmp_dir = f"/tmp/{product_name}/netcdfs/"
 
     netcdf_file_paths = []
@@ -217,9 +218,9 @@ def download_cogs(
             netcdf_file_paths.append(output_netcdf_file_path)
         else:
             failed_to_download.append(netcdf_url)
+    log.info("Download complete")
 
     log.info(f"Generating COG files for the product {product_name}")
-
     # Define the tiles over Africa
     # Select resolution for tile
     if "300m" in netcdf_urls[0]:
