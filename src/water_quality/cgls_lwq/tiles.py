@@ -119,7 +119,13 @@ def get_africa_tiles(grid_res: int | float) -> list:
     list
         List of tiles, each item contains the tile index and the tile geobox.
     """
-    multiplier = 10
+    if grid_res == 300:
+        multiplier = 10
+    elif grid_res == 100:
+        multiplier = 10 * 3
+    else:
+        NotImplementedError(f"gridspec for resolution {grid_res} not implemented")
+
     gridspec = GridSpec(
         crs="EPSG:6933",
         tile_shape=XY(y=320 * multiplier, x=320 * multiplier),

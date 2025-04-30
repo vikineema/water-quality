@@ -6,13 +6,13 @@ Lake Water Quality netcdf files
 import os
 import posixpath
 import re
+from urllib.parse import urlparse
 
 import rasterio
-from osgeo import gdal
-from rasterio.errors import RasterioIOError
+import requests
 
 from water_quality.cgls_lwq.constants import NAMING_PREFIX
-from water_quality.io import get_gdal_vsi_prefix, is_local_path
+from water_quality.io import is_local_path
 
 
 def parse_netcdf_url(netcdf_url: str) -> tuple[str]:
@@ -140,3 +140,33 @@ def get_netcdf_subdatasets_names(netcdf_url: str) -> list[str]:
     """
     netcdf_subdatasets_names = list(get_netcdf_subdatasets_uris(netcdf_url).keys())
     return netcdf_subdatasets_names
+
+
+def get_netcdf_urls_from_manifest(manifest_file_url: str) -> list[str]:
+    # Get all the urls from the manifest file
+    r = requests.get(manifest_file_url)
+    all_netcdf_urls = [i.strip() for i in r.text.splitlines()]
+    all_netcdf_urls = sorted(all_netcdf_urls, key=lambda url: posixpath.basename(url))
+
+    # Filter to remove duplicates
+    grouped_urls = {}
+    for url in all_netcdf_urls:
+        key = posixpath.basename(url)
+        existing_value = grouped_urls.get(key, None)
+        if existing_value is not None:
+            if posixpath.basename(url) == posixpath.basename(existing_value):
+                if "//" in urlparse(existing_value).path:
+                    grouped_urls[key] = url
+                else:
+                    pass
+            else:
+                NotImplementedError()
+        else:
+            grouped_urls[key] = url
+
+    all_netcdf_urls = list(grouped_urls.values())
+
+    check = [i for i in all_netcdf_urls if "//" in urlparse(i).path]
+    assert len(check) == 0
+
+    return all_netcdf_urls

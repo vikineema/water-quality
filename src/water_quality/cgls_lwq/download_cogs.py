@@ -21,6 +21,7 @@ from tqdm import tqdm
 from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS, MEASUREMENTS
 from water_quality.cgls_lwq.netcdf import (
     get_netcdf_subdatasets_uris,
+    get_netcdf_urls_from_manifest,
     parse_netcdf_subdatasets_uri,
     parse_netcdf_url,
 )
@@ -158,10 +159,7 @@ def download_cogs(
         )
 
     # Read urls available for the product
-    r = requests.get(MANIFEST_FILE_URLS[product_name])
-    all_netcdf_urls = [i.strip() for i in r.text.splitlines()]
-    all_netcdf_urls.sort()
-
+    all_netcdf_urls = get_netcdf_urls_from_manifest(MANIFEST_FILE_URLS[product_name])
     log.info(f"Found {len(all_netcdf_urls)} netcdf urls in the manifest file")
 
     # Apply filter

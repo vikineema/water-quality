@@ -6,12 +6,15 @@ import logging
 import os
 import posixpath
 import re
+from email.utils import parsedate_to_datetime
+from urllib.parse import urlparse
 
 import fsspec
 import requests
 from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
 from gcsfs import GCSFileSystem
+from odc.aws import s3_url_parse
 from s3fs.core import S3FileSystem
 from tqdm import tqdm
 
@@ -220,3 +223,41 @@ def get_gdal_vsi_prefix(file_path) -> str:
         return f"/vsigs/{vsi_prefix_1_file_path}"
     else:
         NotImplementedError()
+
+
+def gsutil_uri_to_public_url(uri: str) -> str:
+    """Convert gsutil URI to a public URL"""
+    loc = urlparse(uri)
+    if loc.scheme not in ("gs", "gcs"):
+        raise ValueError(f"{uri} is not a gsutil URI")
+    else:
+        bucket = loc.hostname
+        key = re.sub("^[/]", "", loc.path)
+        public_url = join_urlpath("https://storage.googleapis.com/", bucket, key)
+        return public_url
+
+
+def s3_uri_to_public_url(s3_uri, region="af-south-1"):
+    """Convert S3 URI to a public HTTPS URL"""
+    bucket, key = s3_url_parse(s3_uri)
+    return f"https://{bucket}.s3.{region}.amazonaws.com/{key}"
+
+
+def get_last_modified(uri: str, aws_region="af-south-1"):
+    """Returns the Last-Modified timestamp
+    of a given URL or URI if available."""
+    if is_gcsfs_path(uri):
+        url = gsutil_uri_to_public_url(uri)
+    elif is_s3_path(uri):
+        url = s3_uri_to_public_url(uri, aws_region)
+    else:
+        url = uri
+
+    assert is_http_url(url)
+
+    response = requests.head(url, allow_redirects=True)
+    last_modified = response.headers.get("Last-Modified")
+    if last_modified:
+        return parsedate_to_datetime(last_modified)
+    else:
+        return None
