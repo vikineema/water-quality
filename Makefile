@@ -70,14 +70,20 @@ explorer-refresh-products:
 
 ## cgls_lwq300_2002_2012
 download-cog-files-cgls_lwq300_2002_2012:
-	mprof run cgls-lwq  download-cogs \
+	docker compose exec -T jupyter \
+	mprof run cgls-lwq download-cogs \
 	--product-name=cgls_lwq300_2002_2012 \
-	--cog-output-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
+	--cog-output-dir=data/cgls_lwq300_2002_2012/ \
 	--no-overwrite \
 	-vvv
 
+copy-cogs-to-s3-cgls_lwq300_2002_2012:
+	aws s3 cp --recursive --no-sign-request \
+	data/cgls_lwq300_2002_2012/ \
+	s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ 
+
 create-stac-files-cgls_lwq300_2002_2012: ## Create per dataset metadata for a LWQ product
-	mprof run cgls-lwq  create-stac-files \
+	mprof run cgls-lwq create-stac-files \
 	--cogs-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
 	--product-yaml=products/cgls_lwq300_2002_2012.odc-product.yaml \
 	--stac-output-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
@@ -95,12 +101,12 @@ index-stac-cgls_lwq300_2002_2012:
 ## cgls_lwq300_2016_2024
 download-cog-files-cgls_lwq300_2016_2024:
 	docker compose exec -T jupyter \
-		mprof run cgls-lwq  download-cogs \
-		--product-name=cgls_lwq300_2016_2024 \
-		--cog-output-dir=data/cgls_lwq300_2016_2024/ \
-		--url-filter="201605" \
-		--no-overwrite \
-		-vvv
+	mprof run cgls-lwq download-cogs \
+	--product-name=cgls_lwq300_2016_2024 \
+	--cog-output-dir=data/cgls_lwq300_2016_2024/ \
+	--url-filter="201605" \
+	--no-overwrite \
+	-vvv
 
 copy-cogs-to-s3-cgls_lwq300_2016_2024:
 	aws s3 cp --recursive --no-sign-request \
@@ -125,8 +131,8 @@ index-stac-cgls_lwq300_2016_2024:
 
 ## cgls_lwq100_2019_2024
 download-cog-files-cgls_lwq100_2019_2024:
-	## docker compose exec -T jupyter \
-	mprof run cgls-lwq  download-cogs \
+	docker compose exec -T jupyter \
+	mprof run cgls-lwq download-cogs \
 	--product-name=cgls_lwq100_2019_2024 \
 	--cog-output-dir=data/cgls_lwq100_2019_2024/ \
 	--url-filter="202403" \
