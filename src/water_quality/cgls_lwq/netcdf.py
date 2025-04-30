@@ -114,12 +114,9 @@ def get_netcdf_subdatasets_uris(netcdf_url: str) -> dict[str, str]:
     dict[str, str]
         Mapping of name to URI for all subdatasets in the CGLS Lake Water Quality netcdf file
     """
-    try:
-        with rasterio.open(netcdf_url, "r") as src:
-            subdatasets = src.subdatasets
-    except RasterioIOError:
-        subdatasets = gdal.Open(get_gdal_vsi_prefix(netcdf_url)).GetSubDatasets()
-        subdatasets = [i[0] for i in subdatasets]
+
+    with rasterio.open(netcdf_url, "r") as src:
+        subdatasets = src.subdatasets
 
     netcdf_subdatasets_uris = {get_netcdf_subdataset_variable(i): i for i in subdatasets}
 
