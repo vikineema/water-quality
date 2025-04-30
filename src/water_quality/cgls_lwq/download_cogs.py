@@ -300,11 +300,11 @@ def download_cogs(
                         # Write cog files
                         if is_local_path(output_cog_url):
                             cropped_da.odc.write_cog(
-                                fname=output_cog_url, overwrite=overwrite, tags=filtered_attrs
+                                fname=output_cog_url, overwrite=True, tags=filtered_attrs
                             )
                         else:
                             cog_bytes = cropped_da.odc.write_cog(
-                                fname=":mem:", overwrite=overwrite, tags=filtered_attrs
+                                fname=":mem:", overwrite=True, tags=filtered_attrs
                             )
                             fs = get_filesystem(output_cog_url, anon=False)
                             with fs.open(output_cog_url, "wb") as f:
@@ -313,8 +313,8 @@ def download_cogs(
                 log.info(f"Written COGs for {var} subdataset")
         except Exception as error:
             log.exception(error)
-            log.error(f"Failed to process netcdf {netcdf_url}")
-            failed_to_tile.append(netcdf_url)
+            log.error(f"Failed to process netcdf {local_netcdf_file}")
+            failed_to_tile.append(local_netcdf_file)
 
     failed_tasks = failed_to_download + failed_to_tile
     if failed_tasks:
