@@ -8,10 +8,12 @@ import posixpath
 import re
 
 import fsspec
+import requests
 from fsspec.implementations.http import HTTPFileSystem
 from fsspec.implementations.local import LocalFileSystem
 from gcsfs import GCSFileSystem
 from s3fs.core import S3FileSystem
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -144,18 +146,46 @@ def find_json_files(directory_path: str, file_name_pattern: str = ".*") -> list[
     return json_file_paths
 
 
-def download_file(url: str, output_file_path: str, verbose: bool = False):
-    fs_url = get_filesystem(url)
-    fs_output_file_path = get_filesystem(output_file_path, anon=False)
+def download_file_from_url(url: str, output_file_path: str, chunks: int = 100) -> str:
+    """Download a file from a URL
+
+    Parameters
+    ----------
+    url : str
+        URL to download file from.
+    output_file_path : str
+        Path of file to download to
+    chunks : int, optional
+        Chunk size in MB, by default 100
+
+    Returns
+    -------
+    str
+        The path the file has been downloaded to.
+    """
+    fs = get_filesystem(output_file_path, anon=False)
 
     # Create the parent directories if they do not exist
-    parent_dir = fs_output_file_path._parent(output_file_path)
-    fs_output_file_path.makedirs(parent_dir, exist_ok=True)
+    parent_dir = fs._parent(output_file_path)
+    if not check_directory_exists(parent_dir):
+        fs.makedirs(parent_dir, exist_ok=True)
 
-    fs_url.get(url, output_file_path)
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        total = int(r.headers.get("content-length", 0))
+        with fs.open(output_file_path, "wb") as f:
+            with tqdm(
+                desc=output_file_path,
+                total=total,
+                unit="B",
+                unit_scale=True,
+                unit_divisor=1024,
+            ) as bar:
+                for chunk in r.iter_content(chunk_size=chunks * 1024**2):
+                    size = f.write(chunk)
+                    bar.update(size)
 
-    if verbose:
-        log.info(f"Downloaded {output_file_path}")
+    return output_file_path
 
 
 def get_gdal_vsi_prefix(file_path) -> str:

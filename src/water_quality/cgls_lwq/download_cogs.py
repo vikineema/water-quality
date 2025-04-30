@@ -5,6 +5,7 @@ crop and convert to Cloud Optimized Geotiffs, and push to an S3 bucket.
 
 import json
 import logging
+import posixpath
 import sys
 import warnings
 from datetime import datetime
@@ -31,6 +32,7 @@ from water_quality.cgls_lwq.tiles import (
 from water_quality.io import (
     check_directory_exists,
     check_file_exists,
+    download_file_from_url,
     get_filesystem,
     is_local_path,
     join_urlpath,
@@ -157,25 +159,25 @@ def download_cogs(
 
     # Read urls available for the product
     r = requests.get(MANIFEST_FILE_URLS[product_name])
-    netcdf_urls = [i.strip() for i in r.text.splitlines()]
-    netcdf_urls.sort()
+    all_netcdf_urls = [i.strip() for i in r.text.splitlines()]
+    all_netcdf_urls.sort()
 
-    log.info(f"Found {len(netcdf_urls)} netcdf urls in the manifest file")
+    log.info(f"Found {len(all_netcdf_urls)} netcdf urls in the manifest file")
 
     # Apply filter
     if url_filter:
-        netcdf_urls = [i for i in netcdf_urls if url_filter in i]
-        if len(netcdf_urls) < 1:
+        all_netcdf_urls = [i for i in all_netcdf_urls if url_filter in i]
+        if len(all_netcdf_urls) < 1:
             raise ValueError(
                 f"No netcdf urls found in manifest file that match the filter '{url_filter}'"
             )
         else:
             log.info(
-                f"Found {len(netcdf_urls)} netcdf urls in the manifest file that match the filter '{url_filter}'"
+                f"Found {len(all_netcdf_urls)} netcdf urls in the manifest file that match the filter '{url_filter}'"
             )
 
     # Split files equally among the workers
-    task_chunks = np.array_split(np.array(netcdf_urls), max_parallel_steps)
+    task_chunks = np.array_split(np.array(all_netcdf_urls), max_parallel_steps)
     task_chunks = [chunk.tolist() for chunk in task_chunks]
     task_chunks = list(filter(None, task_chunks))
 
@@ -186,7 +188,35 @@ def download_cogs(
 
     log.info(f"Executing worker {worker_idx}")
 
-    dataset_paths = task_chunks[worker_idx]
+    netcdf_urls = task_chunks[worker_idx]
+
+    # Download netcdf files to disk
+    tmp_dir = f"/tmp/{product_name}/netcdfs/"
+
+    dataset_paths = []
+    failed_to_download = []
+
+    for netcdf_url in netcdf_urls:
+        output_netcdf_file_path = join_urlpath(tmp_dir, posixpath.basename(netcdf_url))
+
+        if check_file_exists(output_netcdf_file_path):
+            dataset_paths.append(output_netcdf_file_path)
+            continue
+        else:
+            try:
+                output_netcdf_file_path = download_file_from_url(
+                    url=netcdf_url, output_file_path=output_netcdf_file_path, chunks=100
+                )
+                log.info(f"Downloaded {netcdf_url} to {output_netcdf_file_path}")
+            except Exception as error:
+                log.exception(error)
+                log.error(f"Failed to download netcdf {netcdf_url}")
+                failed_to_download.append(netcdf_url)
+
+        if check_file_exists(output_netcdf_file_path):
+            dataset_paths.append(output_netcdf_file_path)
+        else:
+            failed_to_download.append(netcdf_url)
 
     log.info(f"Generating COG files for the product {product_name}")
 
@@ -198,7 +228,7 @@ def download_cogs(
         grid_res = 100
 
     tiles = get_africa_tiles(grid_res)
-    failed_tasks = []
+    failed_to_tile = []
     for idx, netcdf_url in enumerate(dataset_paths):
         try:
             log.info(f"Generating cog files for {netcdf_url} {idx + 1}/{len(dataset_paths)}")
@@ -281,8 +311,9 @@ def download_cogs(
         except Exception as error:
             log.exception(error)
             log.error(f"Failed to process netcdf {netcdf_url}")
-            failed_tasks.append(netcdf_url)
+            failed_to_tile.append(netcdf_url)
 
+    failed_tasks = failed_to_download + failed_to_tile
     if failed_tasks:
         failed_tasks_json_array = json.dumps(failed_tasks)
 
