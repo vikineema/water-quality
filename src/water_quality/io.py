@@ -154,14 +154,14 @@ def download_file_from_url(url: str, output_file_path: str, chunks: int = 100) -
     url : str
         URL to download file from.
     output_file_path : str
-        Path of file to download to
+        File path to download to.
     chunks : int, optional
         Chunk size in MB, by default 100
 
     Returns
     -------
     str
-        The path the file has been downloaded to.
+        The file path the file has been downloaded to.
     """
     fs = get_filesystem(output_file_path, anon=False)
 

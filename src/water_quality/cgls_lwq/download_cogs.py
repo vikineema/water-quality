@@ -193,14 +193,14 @@ def download_cogs(
     # Download netcdf files to disk
     tmp_dir = f"/tmp/{product_name}/netcdfs/"
 
-    dataset_paths = []
+    netcdf_file_paths = []
     failed_to_download = []
 
     for netcdf_url in netcdf_urls:
         output_netcdf_file_path = join_urlpath(tmp_dir, posixpath.basename(netcdf_url))
 
         if check_file_exists(output_netcdf_file_path):
-            dataset_paths.append(output_netcdf_file_path)
+            netcdf_file_paths.append(output_netcdf_file_path)
             continue
         else:
             try:
@@ -214,7 +214,7 @@ def download_cogs(
                 failed_to_download.append(netcdf_url)
 
         if check_file_exists(output_netcdf_file_path):
-            dataset_paths.append(output_netcdf_file_path)
+            netcdf_file_paths.append(output_netcdf_file_path)
         else:
             failed_to_download.append(netcdf_url)
 
@@ -229,12 +229,14 @@ def download_cogs(
 
     tiles = get_africa_tiles(grid_res)
     failed_to_tile = []
-    for idx, netcdf_url in enumerate(dataset_paths):
+    for idx, local_netcdf_file in enumerate(netcdf_file_paths):
         try:
-            log.info(f"Generating cog files for {netcdf_url} {idx + 1}/{len(dataset_paths)}")
+            log.info(
+                f"Generating cog files for {local_netcdf_file} {idx + 1}/{len(netcdf_file_paths)}"
+            )
 
             # Get the subdatasets in the netcdf
-            netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(netcdf_url)
+            netcdf_subdatasets_uris = get_netcdf_subdatasets_uris(local_netcdf_file)
             # Filter by required measurements
             netcdf_subdatasets_uris = {
                 k: v for k, v in netcdf_subdatasets_uris.items() if k in MEASUREMENTS[product_name]
