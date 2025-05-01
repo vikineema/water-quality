@@ -150,6 +150,10 @@ download-cog-files-cgls_lwq300_2024_nrt:
 	--no-overwrite \
 	-vvv
 
+copy-cogs-to-s3-cgls_lwq300_2024_nrt:
+	aws s3 cp --recursive --no-sign-request \
+	data/cgls_lwq300_2024_nrt/ \
+	s3://deafrica-water-quality-dev/cgls_lwq300_2024_nrt/ 
 
 ## cgls_lwq100_2024_nrt
 download-cog-files-cgls_lwq100_2024_nrt:
