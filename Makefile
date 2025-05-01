@@ -193,7 +193,7 @@ index-stac-cgls_lwq300_2024_nrt:
 
 ## cgls_lwq100_2024_nrt
 download-cog-files-cgls_lwq100_2024_nrt:
-	docker compose exec -T jupyter \
+	## docker compose exec -T jupyter \
 	mprof run cgls-lwq  download-cogs \
 	--product-name=cgls_lwq100_2024_nrt \
 	--cog-output-dir=data/cgls_lwq100_2024_nrt/ \
