@@ -78,7 +78,7 @@ download-cog-files-cgls_lwq300_2002_2012:
 	-vvv
 
 copy-cogs-to-s3-cgls_lwq300_2002_2012:
-	aws s3 cp --recursive --no-sign-request \
+	aws s3 cp --recursive \
 	data/cgls_lwq300_2002_2012/ \
 	s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ 
 
@@ -109,7 +109,7 @@ download-cog-files-cgls_lwq300_2016_2024:
 	-vvv
 
 copy-cogs-to-s3-cgls_lwq300_2016_2024:
-	aws s3 cp --recursive --no-sign-request \
+	aws s3 cp --recursive \
 	data/cgls_lwq300_2016_2024/ \
 	s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/ 
 
@@ -140,7 +140,7 @@ download-cog-files-cgls_lwq100_2019_2024:
 	-vvv
 
 copy-cogs-to-s3-cgls_lwq100_2019_2024:
-	aws s3 cp --recursive --no-sign-request \
+	aws s3 cp --recursive \
 	data/cgls_lwq100_2019_2024/ \
 	s3://deafrica-water-quality-dev/cgls_lwq100_2019_2024/ 
 
@@ -171,7 +171,7 @@ download-cog-files-cgls_lwq300_2024_nrt:
 	-vvv
 
 copy-cogs-to-s3-cgls_lwq300_2024_nrt:
-	aws s3 cp --recursive --no-sign-request \
+	aws s3 cp --recursive \
 	data/cgls_lwq300_2024_nrt/ \
 	s3://deafrica-water-quality-dev/cgls_lwq300_2024_nrt/ 
 
@@ -202,7 +202,7 @@ download-cog-files-cgls_lwq100_2024_nrt:
 	-vvv
 
 copy-cogs-to-s3-cgls_lwq100_2024_nrt:
-	aws s3 cp --recursive --no-sign-request \
+	aws s3 cp --recursive \
 	data/cgls_lwq100_2024_nrt/ \
 	s3://deafrica-water-quality-dev/cgls_lwq100_2024_nrt/ 
 
