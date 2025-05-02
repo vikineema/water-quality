@@ -54,7 +54,9 @@ def get_filesystem(
     anon: bool = True,
 ) -> S3FileSystem | LocalFileSystem | GCSFileSystem:
     if is_s3_path(path=path):
-        fs = S3FileSystem(anon=anon, s3_additional_kwargs={"ACL": "bucket-owner-full-control"})
+        fs = S3FileSystem(
+            anon=anon, profile="default", s3_additional_kwargs={"ACL": "bucket-owner-full-control"}
+        )
     elif is_gcsfs_path(path=path):
         if anon:
             fs = GCSFileSystem(token="anon")
