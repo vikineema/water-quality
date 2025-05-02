@@ -124,7 +124,11 @@ def prepare_dataset(
     p.properties[f"{custom_prefix}:processing_centre"] = common_attrs["processing_centre"]
     p.properties[f"{custom_prefix}:processing_level"] = common_attrs["processing_level"]
     p.properties[f"{custom_prefix}:processor"] = common_attrs["processor"]
-    p.properties[f"{custom_prefix}:product_type"] = common_attrs["product_type"]
+
+    product_type = common_attrs.get("product_type")
+    if product_type:
+        p.properties[f"{custom_prefix}:product_type"] = common_attrs["product_type"]
+
     p.properties[f"{custom_prefix}:title"] = common_attrs["title"]
     p.properties[f"{custom_prefix}:trackingid"] = common_attrs["trackingID"]
 
