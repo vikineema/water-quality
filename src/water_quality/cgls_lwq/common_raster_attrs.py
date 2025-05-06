@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from water_quality.cgls_lwq.constants import MANIFEST_FILE_URLS, MEASUREMENTS
 from water_quality.cgls_lwq.netcdf import get_netcdf_subdatasets_uris
-from water_quality.io import get_filesystem, is_local_path, join_urlpath
+from water_quality.io import get_filesystem, is_local_path, join_url
 from water_quality.logs import setup_logging
 
 
@@ -54,7 +54,7 @@ def get_common_raster_attrs(
         output_dir = os.path.abspath(output_dir)
 
     # Get the file where to store the  storage parameters
-    output_file_path = join_urlpath(output_dir, product_name, "storage_parameters.txt")
+    output_file_path = join_url(output_dir, product_name, "storage_parameters.txt")
     # Create the parent directories if they do not exist
     fs = get_filesystem(output_file_path, anon=False)
     parent_dir = fs._parent(output_file_path)
