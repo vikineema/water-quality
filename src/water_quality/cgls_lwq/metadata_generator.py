@@ -27,7 +27,7 @@ from water_quality.io import (
     is_local_path,
     join_urlpath,
 )
-from water_quality.logs import logging_setup
+from water_quality.logs import setup_logging
 
 
 def get_stac_item_destination_url(output_dir: str, dataset_tile_id: str) -> str:
@@ -172,7 +172,7 @@ def create_stac_files(
     write_eo3: bool,
 ):
     # Setup logging level
-    logging_setup(verbose)
+    setup_logging(verbose)
     log = logging.getLogger(__name__)
 
     # Find all the geotiffs

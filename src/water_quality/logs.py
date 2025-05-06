@@ -2,7 +2,7 @@ import logging
 import sys
 
 
-def logging_setup(verbose: int = 1):
+def setup_logging(verbose: int = 1):
     """
     Setup logging to print to stdout with default logging level being CRITICAL.
     """

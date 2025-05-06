@@ -12,7 +12,6 @@ from datetime import datetime
 
 import click
 import numpy as np
-import requests
 import rioxarray
 from odc.geo.xr import assign_crs
 from rasterio.errors import NotGeoreferencedWarning
@@ -38,7 +37,7 @@ from water_quality.io import (
     is_local_path,
     join_urlpath,
 )
-from water_quality.logs import logging_setup
+from water_quality.logs import setup_logging
 
 # Suppress the warning
 warnings.filterwarnings("ignore", category=NotGeoreferencedWarning)
@@ -145,7 +144,7 @@ def download_cogs(
     url_filter: str,
 ):
     # Setup logging level
-    logging_setup(verbose)
+    setup_logging(verbose)
     log = logging.getLogger(__name__)
 
     if product_name not in MANIFEST_FILE_URLS.keys():
