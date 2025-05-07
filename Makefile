@@ -74,6 +74,7 @@ download-cog-files-cgls_lwq300_2002_2012:
 	mprof run cgls-lwq download-cogs \
 	--product-name=cgls_lwq300_2002_2012 \
 	--cog-output-dir=data/cgls_lwq300_2002_2012/ \
+	--url-filter="200206" \
 	--no-overwrite \
 	-vvv
 

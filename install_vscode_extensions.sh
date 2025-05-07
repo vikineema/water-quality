@@ -1,22 +1,15 @@
+
 #!/bin/bash
 echo "🪛 Installing VSCode Extensions:"
 echo "--------------------------------"
 
 # Docker 
 extensions_list=(
-    # Docker and remote tools
-    #"ms-azuretools.vscode-docker"
-    #"ms-vscode-remote.remote-containers"
-    #"ms-kubernetes-tools.vscode-kubernetes-tools"
-    #"ms-vscode-remote.vscode-remote-extensionpack"
     # Python tools
     "ms-python.python"
     "ms-python.vscode-python-envs"
     "ms-python.debugpy"
     "ms-python.vscode-pylance"
-    "ms-python.isort"
-    "ms-python.flake8"
-    "ms-python.black-formatter"
     "charliermarsh.ruff"
     "ms-toolsai.jupyter"
     "ms-toolsai.jupyter-renderers"
@@ -34,11 +27,15 @@ extensions_list=(
     "GitHub.remotehub"
     "eamodio.gitlens"
     # Markdown
-    "DavidAnson.vscode-markdownlint"
+    "davidanson.vscode-markdownlint"
     "shd101wyy.markdown-preview-enhanced"
+    bierner.markdown-preview-github-styles
     # TOML
     tamasfe.even-better-toml
     # General code tools
+    gruntfuggly.todo-tree
+    ibm.output-colorizer
+    aaron-bond.better-comments
     "njpwerner.autodocstring"
     "esbenp.prettier-vscode"
     "mikestead.dotenv"

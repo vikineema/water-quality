@@ -57,6 +57,9 @@ test = [
 "Source" = "https://github.com/vikineema/waterquality/"
 
 [project.scripts]
-cgls-lwq = "water_quality.cgls_lwq.main:cgls_lwq"
+# Indexing tools
 s3-to-dc-v2 = "water_quality.indexing_tools.s3_to_dc_v2:cli"
 fs-to-dc-v2 = "water_quality.indexing_tools.fs_to_dc_v2:cli"
+# cgls-lwq products 
+download-cgls-lwq-cogs = "water_quality.cgls_lwq.download_cogs:download_cogs"
+create-cgls-lwq-stac = "water_quality.cgls_lwq.metadata_generator:create_stac_files"
