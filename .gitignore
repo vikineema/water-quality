@@ -21,3 +21,9 @@ data/**
 # Memory profiler files
 core
 mprofile_*
+# Ignore items in tmp folder
+tmp/**
+# Ignore items in notebooks folder
+notebooks/**
+# Ignore items in data folder
+data/**
