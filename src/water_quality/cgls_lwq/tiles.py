@@ -6,8 +6,8 @@ from odc.geo import XY, Resolution
 from odc.geo.geom import BoundingBox
 from odc.geo.gridspec import GridSpec
 
-from water_quality.cgls_lwq.constants import AFRICA_BBOX
 from water_quality.io import is_local_path
+from water_quality.utils import AFRICA_BBOX
 
 
 def get_tile_index_str_tuple(string_: str) -> tuple[str]:
