@@ -13,7 +13,7 @@ from datetime import datetime
 
 import click
 import numpy as np
-import rioxarray
+import rioxarray  # noqa F401
 from odc.geo.xr import assign_crs
 from rasterio.errors import NotGeoreferencedWarning
 from tqdm import tqdm
@@ -24,6 +24,7 @@ from water_quality.cgls_lwq.netcdf import (
     get_netcdf_urls_from_manifest,
     parse_netcdf_subdatasets_uri,
     parse_netcdf_url,
+    read_netcdf_url,
 )
 from water_quality.cgls_lwq.tiles import (
     get_africa_tiles,
@@ -197,10 +198,10 @@ def download_cogs(
     tiles = get_africa_tiles(grid_res)
 
     tmp_dir = f"tmp/{product_name}/netcdfs/"
-    failed_to_download = []
-    failed_to_tile = []
+    failed_tasks = []
+    max_retries = 5
     for netcdf_url in netcdf_urls:
-        # Download file
+        # Download file instead.
         output_netcdf_file_path = join_url(tmp_dir, posixpath.basename(netcdf_url))
         log.info(f"Downloading {netcdf_url} to {output_netcdf_file_path}")
 
@@ -215,9 +216,10 @@ def download_cogs(
             except Exception as error:
                 log.exception(error)
                 log.error(f"Failed to download {netcdf_url}")
-                failed_to_download.append(netcdf_url)
+                failed_tasks.append(f"Failed to download {netcdf_url}")
+                continue
 
-        # Tile the downloaded file
+        log.info("Generating cog files")
         if check_file_exists(output_netcdf_file_path):
             log.info(f"Generating cog files for {output_netcdf_file_path}")
             try:
@@ -233,7 +235,9 @@ def download_cogs(
                 assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS[product_name])
 
                 for var, subdataset_uri in netcdf_subdatasets_uris.items():
-                    da = rioxarray.open_rasterio(subdataset_uri).squeeze()
+                    # da = rioxarray.open_rasterio(subdataset_uri).squeeze()
+                    da = read_netcdf_url(subdataset_uri, max_retries=max_retries)
+                    da = da.squeeze()
 
                     if "spatial_ref" in list(da.coords):
                         crs_coord_name = "spatial_ref"
@@ -305,12 +309,18 @@ def download_cogs(
             except Exception as error:
                 log.exception(error)
                 log.error(f"Failed to generate cogs for the netcdf {output_netcdf_file_path}")
-                failed_to_tile.append(output_netcdf_file_path)
+                failed_tasks.append(
+                    f"Failed to generate cogs for the netcdf {output_netcdf_file_path}"
+                )
             # Once done remove the file to save on storage in volume
             os.remove(output_netcdf_file_path)
             log.info(f"Deleted {output_netcdf_file_path}")
+        else:
+            error = f"File {output_netcdf_file_path} downloaded from {netcdf_url} but not detected on file system!"
+            log.error(error)
+            failed_tasks.append(error)
+            continue
 
-    failed_tasks = failed_to_download + failed_to_tile
     if failed_tasks:
         failed_tasks_json_array = json.dumps(failed_tasks)
 
