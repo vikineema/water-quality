@@ -249,8 +249,8 @@ def create_stac_files(
                 json.dump(stac_item, f, indent=2)  # `indent=4` makes it human-readable
         except Exception as error:
             log.exception(error)
-            log.error(f"Failed to generate metedata file for dataset {dataset_path}")
-            failed_tasks.append(dataset_path)
+            log.error(f"Failed to generate metedata file for the dataset {dataset_path}")
+            failed_tasks.append(f"Failed to generate metedata file for the dataset {dataset_path}")
 
     if failed_tasks:
         failed_tasks_json_array = json.dumps(failed_tasks)

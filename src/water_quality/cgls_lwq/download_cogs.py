@@ -219,7 +219,6 @@ def download_cogs(
                 failed_tasks.append(f"Failed to download {netcdf_url}")
                 continue
 
-        log.info("Generating cog files")
         if check_file_exists(output_netcdf_file_path):
             log.info(f"Generating cog files for {output_netcdf_file_path}")
             try:
