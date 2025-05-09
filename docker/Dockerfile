@@ -62,7 +62,8 @@ RUN jupyter server extension enable --py --sys-prefix jupyterlab_iframe jupyter_
 WORKDIR $HOME
 COPY --chown=$NB_UID:$NB_GID  src src/
 COPY --chown=$NB_UID:$NB_GID  pyproject.toml .
-RUN pip install .
+RUN pip install . \
+    && pip cache purge  # Clean pip cache in final image
 
 # Clean up
 USER root
