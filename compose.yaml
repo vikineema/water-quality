@@ -15,7 +15,8 @@ services:
 
   jupyter:
     build:
-      context: docker/
+      context: .
+      dockerfile: docker/Dockerfile
     security_opt:
       - seccomp=unconfined
     environment:
