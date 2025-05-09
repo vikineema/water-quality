@@ -305,7 +305,7 @@ def download_cogs(
                                 with fs.open(output_cog_url, "wb") as f:
                                     f.write(cog_bytes)
 
-                            log.info(f"Written COGs for {var} subdataset")
+                    log.info(f"Written COGs for {var} subdataset")
             except Exception as error:
                 log.exception(error)
                 log.error(f"Failed to generate cogs for the netcdf {output_netcdf_file_path}")
