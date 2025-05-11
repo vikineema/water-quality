@@ -18,6 +18,7 @@ dependencies:
   - dask-geopandas
   - geopandas
   - rioxarray
+  - rio-cogeo
   # fsspec extras
   - s3fs
   - gcsfs
