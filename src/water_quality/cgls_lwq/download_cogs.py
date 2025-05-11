@@ -188,6 +188,7 @@ def download_cogs(
     log.info(f"Executing worker {worker_idx}")
 
     netcdf_urls = task_chunks[worker_idx]
+    log.info(f"Worker {worker_idx} to process {len(netcdf_urls)} netcdf files.")
 
     # Define the tiles over Africa
     if "300m" in netcdf_urls[0]:
