@@ -202,7 +202,7 @@ def download_cogs(
     failed_tasks = []
     max_retries = 5
     for idx, netcdf_url in enumerate(netcdf_urls):
-        log.info(f"Processing {netcdf_url} {idx + 1}/{len(netcdf_url)}")
+        log.info(f"Processing {netcdf_url} {idx + 1}/{len(netcdf_urls)}")
         # Download file instead.
         output_netcdf_file_path = join_url(tmp_dir, posixpath.basename(netcdf_url))
         log.info(f"Downloading {netcdf_url} to {output_netcdf_file_path}")
