@@ -121,7 +121,7 @@ def get_eo3_dataset_doc_file_path(
 
 
 @click.command(
-    "create-stac-files",
+    "create-cgls-lwq-stac",
     help="Create per dataset metadata (stac files) for Copernicus Global "
     "Land Service Lake Water Quality datasets.",
     no_args_is_help=True,
@@ -132,7 +132,9 @@ def get_eo3_dataset_doc_file_path(
     help="Directory containing the datasets to generate metadata for",
 )
 @click.option(
-    "--product-yaml", type=str, help="File path or URL to the product definition yaml file"
+    "--product-yaml",
+    type=str,
+    help="File path or URL to the product definition yaml file",
 )
 @click.option(
     "--stac-output-dir",
@@ -160,7 +162,6 @@ def get_eo3_dataset_doc_file_path(
     show_default=True,
     help="Whether to write eo3 dataset documents before they are converted to stac.",
 )
-@click.option("-v", "--verbose", default=1, count=True)
 def create_stac_files(
     cogs_dir: str,
     product_yaml: str,
@@ -168,11 +169,10 @@ def create_stac_files(
     overwrite: bool,
     max_parallel_steps: int,
     worker_idx: int,
-    verbose: int,
     write_eo3: bool,
 ):
     # Setup logging level
-    setup_logging(verbose)
+    setup_logging()
     log = logging.getLogger(__name__)
 
     # Find all the geotiffs
@@ -239,7 +239,8 @@ def create_stac_files(
 
             # Convert dataset doc to stac item
             stac_item = to_stac_item(
-                dataset=dataset_doc, stac_item_destination_url=str(stac_item_destination_url)
+                dataset=dataset_doc,
+                stac_item_destination_url=str(stac_item_destination_url),
             )
 
             # Write stac file to disk.
@@ -248,8 +249,8 @@ def create_stac_files(
                 json.dump(stac_item, f, indent=2)  # `indent=4` makes it human-readable
         except Exception as error:
             log.exception(error)
-            log.error(f"Failed to generate metedata file for dataset {dataset_path}")
-            failed_tasks.append(dataset_path)
+            log.error(f"Failed to generate metedata file for the dataset {dataset_path}")
+            failed_tasks.append(f"Failed to generate metedata file for the dataset {dataset_path}")
 
     if failed_tasks:
         failed_tasks_json_array = json.dumps(failed_tasks)

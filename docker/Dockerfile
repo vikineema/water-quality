@@ -1,8 +1,8 @@
 FROM mambaorg/micromamba:2.0.8 AS micromamba
 
 USER root
-COPY environment.yaml requirements.txt /tmp/
-COPY assets/tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl /tmp/assets/
+COPY docker/environment.yaml docker/requirements.txt /tmp/
+COPY docker/assets/tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl /tmp/assets/
 
 # Install packages into the empty conda environmemnt base
 RUN  micromamba install --yes --name base  --file /tmp/environment.yaml --verbose \
@@ -51,12 +51,19 @@ COPY --chown=$NB_UID:$NB_GID --from=micromamba /opt/conda $PYTHON_ENV
 ## Jupyter config
 USER root
 ENV JUPYTERLAB_DIR=$PYTHON_ENV/share/jupyter/lab 
-COPY assets/overrides.json $JUPYTERLAB_DIR/settings/
-COPY assets/jupyter_lab_config.py $PYTHON_ENV/etc/jupyter/
+COPY docker/assets/overrides.json $JUPYTERLAB_DIR/settings/
+COPY docker/assets/jupyter_lab_config.py $PYTHON_ENV/etc/jupyter/
 # Enable server extensions
 USER $NB_USER
 RUN jupyter server extension enable --py --sys-prefix jupyterlab_iframe jupyter_resource_usage \
     && jupyter lab build
+
+# Copy only python package files
+WORKDIR $HOME
+COPY --chown=$NB_UID:$NB_GID  src src/
+COPY --chown=$NB_UID:$NB_GID  pyproject.toml .
+RUN pip install . \
+    && pip cache purge  # Clean pip cache in final image
 
 # Clean up
 USER root
