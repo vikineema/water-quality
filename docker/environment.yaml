@@ -15,11 +15,10 @@ dependencies:
   - odc-stac
   - odc-apps-dc-tools
   ## Analysis packages
-  - dask-geopandas
   - geopandas
   - rioxarray
-  - rio-cogeo
-  # fsspec extras
+  # fsspec + extras
+  - fsspec
   - s3fs
   - gcsfs
   # xarray + extras
