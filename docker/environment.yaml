@@ -46,6 +46,8 @@ dependencies:
   - nodejs
   # developer tools
   - make
+  - wget
+  - curl
   # packages requiring pip
   - pip:
     - assets/tflite_runtime-2.20.0-cp312-cp312-linux_x86_64.whl
