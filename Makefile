@@ -221,3 +221,6 @@ index-stac-cgls_lwq100_2024_nrt:
 	--stac --no-sign-request --update-if-exists --allow-unsafe \
 	s3://deafrica-water-quality-dev/cgls_lwq100_2024_nrt/**/*.json \
 	cgls_lwq100_2024_nrt
+
+sync-local-env:
+	micromamba env update -n water-quality-env -f docker/environment.yaml 
