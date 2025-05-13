@@ -2,12 +2,13 @@ import os
 import posixpath
 import re
 
+import geopandas as gpd
 from odc.geo import XY, Resolution
-from odc.geo.geom import BoundingBox
+from odc.geo.geom import Geometry
 from odc.geo.gridspec import GridSpec
 
 from water_quality.io import is_local_path
-from water_quality.utils import AFRICA_BBOX
+from water_quality.utils import AFRICA_EXTENT_URL
 
 
 def get_tile_index_str_tuple(string_: str) -> tuple[str]:
@@ -134,9 +135,8 @@ def get_africa_tiles(grid_res: int | float) -> list:
     )
 
     # Get the tiles over Africa
-    ulx, uly, lrx, lry = AFRICA_BBOX
-    left, bottom, right, top = ulx, lry, lrx, uly  # (minx, miny, maxx, maxy)
-    bbox = BoundingBox(left, bottom, right, top, crs="EPSG:4326").to_crs(gridspec.crs)
+    africa_extent = gpd.read_file(AFRICA_EXTENT_URL).to_crs(gridspec.crs)
+    africa_extent_geom = Geometry(geom=africa_extent.iloc[0].geometry, crs=africa_extent.crs)
+    tiles = list(gridspec.tiles_from_geopolygon(africa_extent_geom))
 
-    tiles = list(gridspec.tiles(bbox))
     return tiles
