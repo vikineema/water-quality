@@ -33,8 +33,8 @@ install-python-pkgs:
 	docker compose exec jupyter bash -c "cd /home/jovyan && pip install -e ."
 
 lint-src:
-	ruff check --select I --fix src/
-	ruff format --verbose src/
+	ruff check --select I --fix src/ scripts/
+	ruff format --verbose src/ scripts/
 
 add-products:
 	docker compose exec -T jupyter dc-sync-products products/products.csv --update-if-exists
