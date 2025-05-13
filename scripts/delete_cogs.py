@@ -67,7 +67,7 @@ if is_local_path(cog_output_dir):
     expected_dataset_paths = list(set(os.path.dirname(i) for i in expected_cogs))
 else:
     expected_dataset_paths = list(set(posixpath.dirname(i) for i in expected_cogs))
-log.info(f"Expecting {len(expected_cogs)} datasets in {cog_output_dir}")
+log.info(f"Expecting {len(expected_dataset_paths)} datasets in {cog_output_dir}")
 
 log.info(f"Getting the cog files actually in {cog_output_dir}")
 existing_cogs = find_geotiff_files(cog_output_dir)
@@ -78,7 +78,7 @@ if is_local_path(cog_output_dir):
     existing_dataset_paths = list(set(os.path.dirname(i) for i in existing_cogs))
 else:
     existing_dataset_paths = list(set(posixpath.dirname(i) for i in existing_cogs))
-log.info(f"Found {len(expected_cogs)} cog files in {cog_output_dir}")
+log.info(f"Found {len(existing_dataset_paths)} cog files in {cog_output_dir}")
 
 dirs_to_delete = [i for i in existing_dataset_paths if i not in expected_dataset_paths]
 
