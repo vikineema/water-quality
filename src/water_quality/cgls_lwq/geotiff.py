@@ -1,3 +1,7 @@
+"""
+Parse CGLS Lake Water Quality dataset geotiff URLs and filenames.
+"""
+
 import os
 import posixpath
 from urllib.parse import urlparse

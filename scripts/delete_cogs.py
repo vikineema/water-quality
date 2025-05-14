@@ -83,6 +83,6 @@ log.info(f"Found {len(existing_dataset_paths)} datasets in {cog_output_dir}")
 dirs_to_delete = [i for i in existing_dataset_paths if i not in expected_dataset_paths]
 log.info(f"Found {len(dirs_to_delete)} datasets in {cog_output_dir} to delete")
 
-with open('datasets_to_delete.txt', 'w') as f:
+with open("datasets_to_delete.txt", "w") as f:
     for item in dirs_to_delete:
         f.write(f"{item}\n")
