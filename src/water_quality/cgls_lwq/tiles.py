@@ -1,3 +1,8 @@
+"""
+This module contains functions to handle tile management
+for the CGLS Lake Water Quality products.
+"""
+
 import os
 import posixpath
 import re
