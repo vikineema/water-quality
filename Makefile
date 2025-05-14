@@ -223,4 +223,4 @@ index-stac-cgls_lwq100_2024_nrt:
 	cgls_lwq100_2024_nrt
 
 sync-local-env:
-	micromamba env update -n water-quality-env -f docker/environment.yaml 
+	micromamba update -n water-quality-env -f docker/environment.yaml 
