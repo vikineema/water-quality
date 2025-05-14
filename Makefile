@@ -11,8 +11,6 @@ up: ## Bring up your Docker environment
 	docker compose up -d postgres
 	docker compose run checkdb
 	docker compose up -d jupyter
-	docker compose up -d geoserver
-	docker compose up -d pgadmin4
 	make init
 	make add-products
 	make install-python-pkgs
