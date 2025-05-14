@@ -4,7 +4,7 @@ import sys
 
 def setup_logging(verbose: int = 3):
     """
-    Setup logging to print to stdout with default logging level being CRITICAL.
+    Setup logging to print to stdout with default logging level being INFO.
     """
     if verbose == 1:
         level = logging.CRITICAL
