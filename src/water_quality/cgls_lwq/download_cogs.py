@@ -1,5 +1,5 @@
 """
-Download the Copernicus Global Land Service Lake Water Quality datasets,
+Download the Copernicus Global Land Service Lake Water Quality NetCDF files,
 crop and convert to Cloud Optimized Geotiffs, and push to an S3 bucket.
 """
 

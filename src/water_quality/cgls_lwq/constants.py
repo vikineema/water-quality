@@ -1,6 +1,6 @@
 """
 Manifest files and measurements of interest for the
-Copernicus Global Land Service - Lake Water Quality ODC products
+Copernicus Global Land Service - Lake Water Quality products.
 """
 
 MANIFEST_FILE_URLS = {

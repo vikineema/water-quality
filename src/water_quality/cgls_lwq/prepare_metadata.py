@@ -1,6 +1,6 @@
 """
 Prepare eo3 metadata for a Copernicus Global Land Service -
-Lake Water Quality 2002-2012 (raster 300 m), global, 10-daily – version 1 dataset
+Lake Water Quality dataset.
 """
 
 import warnings

@@ -1,6 +1,6 @@
 """
 Functions to parse info from Copernicus Global Land Service -
-Lake Water Quality netcdf files
+Lake Water Quality NetCDF files.
 """
 
 import logging
