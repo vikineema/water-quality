@@ -201,7 +201,6 @@ def create_stac_files(
     dataset_paths = task_chunks[worker_idx]
     log.info(f"Worker {worker_idx} to process {len(dataset_paths)} datasets.")
 
-    log.info(f"Generating stac files for {len(all_dataset_paths)} datasets")
     failed_tasks = []
     for idx, dataset_path in enumerate(dataset_paths):
         try:
