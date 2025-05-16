@@ -24,9 +24,9 @@ services:
       - DB_USERNAME=opendatacube
       - DB_PORT=5432
       - GS_NO_SIGN_REQUEST=yes
-      - AWS_NO_SIGN_REQUEST=true
+      - AWS_NO_SIGN_REQUEST=YES
       #- AWS_S3_ENDPOINT=https://s3.af-south-1.amazonaws.com
-      - AWS_S3_ENDPOINT="s3.af-south-1.amazonaws.com"
+      #- AWS_S3_ENDPOINT="s3.af-south-1.amazonaws.com"
       - AWS_DEFAULT_REGION=af-south-1
     links:
       - postgres:postgres
