@@ -26,6 +26,7 @@ MEASUREMENTS_2 = [
     "last_obs",
     "num_obs",
     "trophic_state_index",
+    "trophic_state_mean",
     "turbidity_blended_mean",
 ]
 MEASUREMENTS_3 = [

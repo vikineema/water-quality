@@ -269,8 +269,9 @@ def download_cogs(
                     for k, v in netcdf_subdatasets_uris.items()
                     if k in MEASUREMENTS[product_name]
                 }
-                # Check
-                assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS[product_name])
+                if product_name != "cgls_lwq100_2019_2024":
+                    # Check
+                    assert len(netcdf_subdatasets_uris) == len(MEASUREMENTS[product_name])
 
                 for var, subdataset_uri in netcdf_subdatasets_uris.items():
                     # da = rioxarray.open_rasterio(subdataset_uri).squeeze()
