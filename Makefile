@@ -38,7 +38,10 @@ add-products:
 	docker compose exec -T jupyter dc-sync-products products/products.csv --update-if-exists
 
 ## Jupyter service
-start-jupyter: ## To be used in micromamba-shell
+sync-local-env:
+	micromamba update -n water-quality-env -f docker/environment.yaml 
+
+start-local-jupyter: ## To be used in micromamba-shell
 	cp docker/assets/jupyter_lab_config.py ${CONDA_PREFIX}/etc/jupyter/jupyter_lab_config.py
 	nohup jupyter lab > /dev/null 2>&1 &
 	sleep 10s
@@ -82,13 +85,13 @@ copy-cogs-to-s3-cgls_lwq300_2002_2012:
 	s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ 
 
 create-stac-files-cgls_lwq300_2002_2012: ## Create per dataset metadata for a LWQ product
-	mprof run cgls-lwq create-stac-files \
-	--cogs-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
+	docker compose exec -T jupyter \
+	create-cgls-lwq-stac  \
+	--cogs-dir=s3://deafrica-input-datasets/cgls_lwq300_2002_2012/x020/y010/2010/09/11/ \
 	--product-yaml=products/cgls_lwq300_2002_2012.odc-product.yaml \
-	--stac-output-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2002_2012/ \
+	--stac-output-dir=s3://deafrica-input-datasets/cgls_lwq300_2002_2012/ \
 	--no-overwrite \
-	--no-write-eo3 \
-	-vvv
+	--no-write-eo3
 
 index-stac-cgls_lwq300_2002_2012:
 	docker compose exec -T jupyter s3-to-dc-v2 \
@@ -104,8 +107,7 @@ download-cog-files-cgls_lwq300_2016_2024:
 	--product-name=cgls_lwq300_2016_2024 \
 	--cog-output-dir=data/cgls_lwq300_2016_2024/ \
 	--url-filter="201605" \
-	--no-overwrite \
-	-vvv
+	--no-overwrite
 
 copy-cogs-to-s3-cgls_lwq300_2016_2024:
 	aws s3 cp --recursive \
@@ -113,13 +115,13 @@ copy-cogs-to-s3-cgls_lwq300_2016_2024:
 	s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/ 
 
 create-stac-files-cgls_lwq300_2016_2024: ## Create per dataset metadata for a LWQ product
-	mprof run cgls-lwq  create-stac-files \
-	--cogs-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/ \
+	docker compose exec -T jupyter \
+	create-cgls-lwq-stac  \
+	--cogs-dir=s3://deafrica-input-datasets/cgls_lwq300_2016_2024/x015/y008/2022/08/01 \
 	--product-yaml=products/cgls_lwq300_2016_2024.odc-product.yaml \
-	--stac-output-dir=s3://deafrica-water-quality-dev/cgls_lwq300_2016_2024/ \
+	--stac-output-dir=data/cgls_lwq300_2016_2024/ \
 	--no-overwrite \
-	--no-write-eo3 \
-	-vvv
+	--no-write-eo3
 
 index-stac-cgls_lwq300_2016_2024:
 	docker compose exec -T jupyter s3-to-dc-v2 \
@@ -220,5 +222,4 @@ index-stac-cgls_lwq100_2024_nrt:
 	s3://deafrica-water-quality-dev/cgls_lwq100_2024_nrt/**/*.json \
 	cgls_lwq100_2024_nrt
 
-sync-local-env:
-	micromamba update -n water-quality-env -f docker/environment.yaml 
+
